@@ -94,27 +94,27 @@ export default function Home() {
   };
 
   const renderDots = (val: number) => {
-    const dotClass = `w-3.5 h-3.5 rounded-full bg-white`;
+    const dotClass = `w-2 h-2 sm:h-3.5 sm:w-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5 rounded-full bg-white`;
     const dotWrapper = 'absolute w-full h-full flex items-center justify-center';
     const dots = {
       1: [<div key="1" className={dotWrapper}><div className={dotClass} /></div>],
-      2: [<div key="2a" className="absolute left-2 top-2"><div className={dotClass} /></div>,<div key="2b" className="absolute right-2 bottom-2"><div className={dotClass} /></div>],
-      3: [<div key="3a" className="absolute top-2"><div className={dotClass} /></div>,<div key="3b" className="absolute left-2 bottom-2"><div className={dotClass} /></div>,<div key="3c" className="absolute right-2 bottom-2"><div className={dotClass} /></div>],
-      4: [<div key="4a" className="absolute left-2 top-2"><div className={dotClass} /></div>,<div key="4b" className="absolute right-2 top-2"><div className={dotClass} /></div>,<div key="4c" className="absolute left-2 bottom-2"><div className={dotClass} /></div>,<div key="4d" className="absolute right-2 bottom-2"><div className={dotClass} /></div>],
+      2: [<div key="2a" className="absolute left-1.5 top-1.5 md:left-2 md:top-2"><div className={dotClass} /></div>,<div key="2b" className="absolute right-1.5 md:right-2 bottom-1.5 md:bottom-2"><div className={dotClass} /></div>],
+      3: [<div key="3a" className="absolute top-1.5 md:top-2"><div className={dotClass} /></div>,<div key="3b" className="absolute left-1.5 md:left-2 bottom-1.5 md:bottom-2"><div className={dotClass} /></div>,<div key="3c" className="absolute right-1.5 md:right-2 bottom-1.5 md:bottom-2"><div className={dotClass} /></div>],
+      4: [<div key="4a" className="absolute left-1.5 top-1.5 md:left-2 md:top-2"><div className={dotClass} /></div>,<div key="4b" className="absolute right-1.5 top-1.5 md:right-2 md:top-2"><div className={dotClass} /></div>,<div key="4c" className="absolute left-1.5 md:left-2 bottom-1.5 md:bottom-2"><div className={dotClass} /></div>,<div key="4d" className="absolute right-1.5 md:right-2 bottom-1.5 md:bottom-2"><div className={dotClass} /></div>],
     };
     return dots[val as keyof typeof dots] || null;
   };
 
   return (
     <div className="flex flex-col items-center min-h-screen py-3 sm:py-4 font-sans">
-      <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-4`}>
+      <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-3 sm:gap-4 md:gap-5`}>
         {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
           <div
             onClick={() => handleClick(rowIndex, colIndex)}
             key={rowIndex * rowsCount + colIndex}
-            className={`relative flex border-8 transition-all duration-200 cursor-pointer
+            className={`relative flex border-4 xs:border-6 s:border-6 sm:border-8 md:border-8 lg:border-10 xl:border-10 transition-all duration-200 cursor-pointer border-white
               ${cell.color === 'blue-400' ? 'bg-blue-400' : cell.color === 'red-400' ? 'bg-red-400' : 'bg-white'}
-              rounded-xl justify-center items-center h-[2.6rem] w-[2.6rem] xs:h-14 xs:w-14 sm:h-14 sm:w-14 md:h-16 md:w-16 xl:h-18 xl:w-18`}
+              rounded-xl justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
           >
             {cell.val !== 0 && renderDots(cell.val)}
             {burstDots
