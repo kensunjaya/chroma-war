@@ -1,95 +1,138 @@
 'use client';
-import { useState } from "react";
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
 
-type Cell = {
-  val: number;
+// BurstDot component
+const BurstDot = ({ direction, color, onComplete }: {
+  direction: Direction;
   color: Color;
-}
+  onComplete: () => void;
+}) => {
+  const getCoords = (dir: Direction) => {
+    switch (dir) {
+      case 'up': return { x: 0, y: -40 };
+      case 'down': return { x: 0, y: 40 };
+      case 'left': return { x: -40, y: 0 };
+      case 'right': return { x: 40, y: 0 };
+    }
+  };
 
-type Color = "red-400" | "blue-400" | "white";
+  return (
+    <motion.div
+      initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+      animate={{ ...getCoords(direction), opacity: 0, scale: 1.2 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
+      onAnimationComplete={onComplete}
+      className={`absolute w-2.5 h-2.5 rounded-full bg-${color} pointer-events-none`}
+    />
+  );
+};
 
+const rowsCount = 6;
+const colsCount = 6;
 
+// Main Component
 export default function Home() {
-  const [cells, setCells] = useState<Cell[][]>(Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => ({ val: 0, wrong: false, color: "white" }))));
-  const [turn, setTurn] = useState<number>(0);
+
+  const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
+  const [turn, setTurn] = useState(0);
+  const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
+
+  const handleClick = (row: number, col: number) => {
+    const color: Color = turn % 2 === 0 ? 'blue-400' : 'red-400';
+    const cell = cells[row][col];
+
+    if (cell.color === 'white' && turn > 1) return;
+    if (cell.color !== 'white' && cell.color !== color) return;
+    setTurn(turn + 1);
+    recursiveFill(row, col, color, 1000, true); // use the originally calculated `color`
+  };
+
+  const addBurst = (row: number, col: number, color: Exclude<Color, 'white'>) => {
+    ['up', 'down', 'left', 'right'].forEach((dir) => {
+      setBurstDots((prev) => [
+        ...prev,
+        {
+          row,
+          col,
+          dot: {
+            id: Date.now() + Math.random(),
+            direction: dir as Direction,
+            color,
+          },
+        },
+      ]);
+    });
+  };
+
+  const recursiveFill = (row: number, col: number, color: Color, delay: number, isUserAction: boolean = false) => {
+    const newCells = [...cells];
+    if (turn > 1) {
+      newCells[row][col].val += 1;
+    }
+    else {
+      newCells[row][col].val = 3;
+    }
+    newCells[row][col].color = color;
+    if (isUserAction) {
+      setCells([...newCells]);
+    }
+    setTimeout(() => {
+      setCells([...newCells]);
+      if (newCells[row][col].val >= 4) {
+        addBurst(row, col, color as Exclude<Color, 'white'>);
+        newCells[row][col].val = 0;
+        newCells[row][col].color = 'white';
+
+        if (row > 0) recursiveFill(row - 1, col, color, delay);
+        if (row < rowsCount - 1) recursiveFill(row + 1, col, color, delay);
+        if (col > 0) recursiveFill(row, col - 1, color, delay);
+        if (col < colsCount - 1) recursiveFill(row, col + 1, color, delay);
+      }
+    }, delay);
+  };
 
   const renderDots = (val: number) => {
-    const dotClass = `w-3 h-3 rounded-full bg-white`;
-    const dotWrapper = "absolute w-full h-full flex items-center justify-center";
-
+    const dotClass = `w-3.5 h-3.5 rounded-full bg-white`;
+    const dotWrapper = 'absolute w-full h-full flex items-center justify-center';
     const dots = {
-      1: [
-        <div key="1" className={dotWrapper}><div className={dotClass} /></div>
-      ],
-      2: [
-        <div key="2a" className="absolute left-2 top-2"><div className={dotClass} /></div>,
-        <div key="2b" className="absolute right-2 bottom-2"><div className={dotClass} /></div>,
-      ],
-      3: [
-        <div key="3a" className="absolute top-2"><div className={dotClass} /></div>,
-        <div key="3b" className="absolute left-2 bottom-2"><div className={dotClass} /></div>,
-        <div key="3c" className="absolute right-2 bottom-2"><div className={dotClass} /></div>,
-      ],
-      4: [
-        <div key="4a" className="absolute left-2 top-2"><div className={dotClass} /></div>,
-        <div key="4b" className="absolute right-2 top-2"><div className={dotClass} /></div>,
-        <div key="4c" className="absolute left-2 bottom-2"><div className={dotClass} /></div>,
-        <div key="4d" className="absolute right-2 bottom-2"><div className={dotClass} /></div>,
-      ]
+      1: [<div key="1" className={dotWrapper}><div className={dotClass} /></div>],
+      2: [<div key="2a" className="absolute left-2 top-2"><div className={dotClass} /></div>,<div key="2b" className="absolute right-2 bottom-2"><div className={dotClass} /></div>],
+      3: [<div key="3a" className="absolute top-2"><div className={dotClass} /></div>,<div key="3b" className="absolute left-2 bottom-2"><div className={dotClass} /></div>,<div key="3c" className="absolute right-2 bottom-2"><div className={dotClass} /></div>],
+      4: [<div key="4a" className="absolute left-2 top-2"><div className={dotClass} /></div>,<div key="4b" className="absolute right-2 top-2"><div className={dotClass} /></div>,<div key="4c" className="absolute left-2 bottom-2"><div className={dotClass} /></div>,<div key="4d" className="absolute right-2 bottom-2"><div className={dotClass} /></div>],
     };
-
     return dots[val as keyof typeof dots] || null;
   };
 
-
-  
-
-  const handleClick = (row: number, col: number, turn: number) => {
-    let color: Color = turn % 2 === 0 ? "blue-400" : "red-400";
-    if (cells[row][col].val === 0) {
-      if (turn > 1) {
-        return;
-      }
-    }
-    if (cells[row][col].color !== "white" && color !== cells[row][col].color) {
-      return;
-    }
-
-    setTurn(turn + 1);
-    color = turn % 2 === 0 ? "blue-400" : "red-400";
-    recursiveFill(row, col, color);
-  }
-  const recursiveFill = (row: number, col: number, color: Color) => {
-    cells[row][col].val += 1;
-    cells[row][col].color = color;
-    setCells([...cells]);
-    if (cells[row][col].val === 4) {
-      cells[row][col].val = 0;
-      cells[row][col].color = "white";
-      setCells([...cells]);
-      if (row > 0) recursiveFill(row - 1, col, color); // Up
-      if (row < 8) recursiveFill(row + 1, col, color); // Down
-      if (col > 0) recursiveFill(row, col - 1, color); // Left
-      if (col < 8) recursiveFill(row, col + 1, color); // Right
-    }
-  }
-
   return (
     <div className="flex flex-col items-center min-h-screen py-3 sm:py-4 font-sans">
-      <div className="grid mt-4 sm:mt-5 grid-cols-9 text-3xl xs:text-3xl sm:text-3xl md:text-5xl lg:text-5xl xl:text-5xl">
-        {cells.map((row, rowIndex) => row.map((cell, colIndex) =>
+      <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-4`}>
+        {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
           <div
-            onClick={() => { handleClick(rowIndex, colIndex, turn) }}
-            // onKeyDown={(event) => handleKeyDown(event, rowIndex, colIndex)}
-            tabIndex={0}
-            key={rowIndex * 9 + colIndex}
-            className={`relative flex border-8
-              ${cell.color === "blue-400" ? "bg-blue-400" : cell.color === "red-400" ? "bg-red-400" : "bg-white"} 
-              rounded-xl justify-center hover:cursor-pointer items-center h-[2.6rem] w-[2.6rem] xs:h-14 xs:w-14 sm:h-14 sm:w-14 md:h-16 md:w-16 xl:h-18 xl:w-18 m-2 select-none`}
+            onClick={() => handleClick(rowIndex, colIndex)}
+            key={rowIndex * rowsCount + colIndex}
+            className={`relative flex border-8 transition-all duration-200 cursor-pointer
+              ${cell.color === 'blue-400' ? 'bg-blue-400' : cell.color === 'red-400' ? 'bg-red-400' : 'bg-white'}
+              rounded-xl justify-center items-center h-[2.6rem] w-[2.6rem] xs:h-14 xs:w-14 sm:h-14 sm:w-14 md:h-16 md:w-16 xl:h-18 xl:w-18`}
           >
             {cell.val !== 0 && renderDots(cell.val)}
+            {burstDots
+              .filter((b) => b.row === rowIndex && b.col === colIndex)
+              .map((b) => (
+                <BurstDot
+                  key={b.dot.id}
+                  direction={b.dot.direction}
+                  color={b.dot.color}
+                  onComplete={() =>
+                    setBurstDots((prev) => prev.filter((x) => x.dot.id !== b.dot.id))
+                  }
+                />
+              ))
+            }
           </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );
