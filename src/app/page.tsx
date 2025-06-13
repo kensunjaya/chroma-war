@@ -2,8 +2,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
-import { MdOutlineLeaderboard } from 'react-icons/md';
-import { FaGithub } from 'react-icons/fa';
 
 // BurstDot component
 const BurstDot = ({ direction, color, onComplete }: {
