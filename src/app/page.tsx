@@ -1,5 +1,5 @@
 'use client';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Cell = {
   val: number;
@@ -52,7 +52,10 @@ export default function Home() {
             // onKeyDown={(event) => handleKeyDown(event, rowIndex, colIndex)}
             tabIndex={0}
             key={rowIndex * 9 + colIndex}
-            className={`flex border text-white dark:text-black bg-${cell.color} rounded-xl justify-center hover:cursor-pointer items-center h-[2.6rem] w-[2.6rem] xs:h-14 xs:w-14 sm:h-14 sm:w-14 md:h-16 md:w-16 xl:h-18 xl:w-18 m-2 select-none`}
+            // ...existing code...
+            className={`flex border text-white dark:text-black 
+              ${cell.color === "blue-400" ? "bg-blue-400" : cell.color === "red-400" ? "bg-red-400" : "bg-white"} 
+              rounded-xl justify-center hover:cursor-pointer items-center h-[2.6rem] w-[2.6rem] xs:h-14 xs:w-14 sm:h-14 sm:w-14 md:h-16 md:w-16 xl:h-18 xl:w-18 m-2 select-none`}
           >
             {cell.val === 0 ? "" : cell.val}
           </div>
