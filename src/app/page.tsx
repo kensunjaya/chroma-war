@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
+import { MdOutlineLeaderboard } from 'react-icons/md';
+import { FaGithub } from 'react-icons/fa';
 
 // BurstDot component
 const BurstDot = ({ direction, color, onComplete }: {
@@ -106,34 +108,39 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen py-3 sm:py-4 font-sans">
-      <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-3 sm:gap-4 md:gap-5`}>
-        {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
-          <div
-            onClick={() => handleClick(rowIndex, colIndex)}
-            key={rowIndex * rowsCount + colIndex}
-            className={`relative flex border-4 xs:border-6 s:border-6 sm:border-8 md:border-8 lg:border-10 xl:border-10 transition-all duration-200 cursor-pointer border-white
-              ${cell.color === 'blue-400' ? 'bg-blue-400' : cell.color === 'red-400' ? 'bg-red-400' : 'bg-white'}
-              rounded-xl justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
-          >
-            {cell.val !== 0 && renderDots(cell.val)}
-            {burstDots
-              .filter((b) => b.row === rowIndex && b.col === colIndex)
-              .map((b) => (
-                <BurstDot
-                  key={b.dot.id}
-                  direction={b.dot.direction}
-                  color={b.dot.color}
-                  onComplete={() =>
-                    setBurstDots((prev) => prev.filter((x) => x.dot.id !== b.dot.id))
-                  }
-                />
-              ))
-            }
-          </div>
-          ))
-        )}
+    <main className="font-sans">
+      <div className="flex flex-row text-3xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-4xl text-center justify-center items-center pt-5">
+        <h1 className="text-center hover:cursor-default font-bold">{"Chr⦿ma War"}</h1>
       </div>
-    </div>
+      <div className="flex flex-col items-center min-h-screen py-3 sm:py-4 font-sans">
+        <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-3 sm:gap-4 md:gap-5`}>
+          {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
+            <div
+              onClick={() => handleClick(rowIndex, colIndex)}
+              key={rowIndex * rowsCount + colIndex}
+              className={`relative flex border-4 xs:border-6 s:border-6 sm:border-8 md:border-8 lg:border-10 xl:border-10 transition-all duration-200 cursor-pointer border-white
+                ${cell.color === 'blue-400' ? 'bg-blue-400' : cell.color === 'red-400' ? 'bg-red-400' : 'bg-white'}
+                rounded-xl justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
+            >
+              {cell.val !== 0 && renderDots(cell.val)}
+              {burstDots
+                .filter((b) => b.row === rowIndex && b.col === colIndex)
+                .map((b) => (
+                  <BurstDot
+                    key={b.dot.id}
+                    direction={b.dot.direction}
+                    color={b.dot.color}
+                    onComplete={() =>
+                      setBurstDots((prev) => prev.filter((x) => x.dot.id !== b.dot.id))
+                    }
+                  />
+                ))
+              }
+            </div>
+            ))
+          )}
+        </div>
+      </div>
+    </main>
   );
 }
