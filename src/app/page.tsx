@@ -13,6 +13,37 @@ export default function Home() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => ({ val: 0, wrong: false, color: "white" }))));
   const [turn, setTurn] = useState<number>(0);
 
+  const renderDots = (val: number) => {
+    const dotClass = `w-3 h-3 rounded-full bg-white`;
+    const dotWrapper = "absolute w-full h-full flex items-center justify-center";
+
+    const dots = {
+      1: [
+        <div key="1" className={dotWrapper}><div className={dotClass} /></div>
+      ],
+      2: [
+        <div key="2a" className="absolute left-2 top-2"><div className={dotClass} /></div>,
+        <div key="2b" className="absolute right-2 bottom-2"><div className={dotClass} /></div>,
+      ],
+      3: [
+        <div key="3a" className="absolute top-2"><div className={dotClass} /></div>,
+        <div key="3b" className="absolute left-2 bottom-2"><div className={dotClass} /></div>,
+        <div key="3c" className="absolute right-2 bottom-2"><div className={dotClass} /></div>,
+      ],
+      4: [
+        <div key="4a" className="absolute left-2 top-2"><div className={dotClass} /></div>,
+        <div key="4b" className="absolute right-2 top-2"><div className={dotClass} /></div>,
+        <div key="4c" className="absolute left-2 bottom-2"><div className={dotClass} /></div>,
+        <div key="4d" className="absolute right-2 bottom-2"><div className={dotClass} /></div>,
+      ]
+    };
+
+    return dots[val as keyof typeof dots] || null;
+  };
+
+
+  
+
   const handleClick = (row: number, col: number, turn: number) => {
     let color: Color = turn % 2 === 0 ? "blue-400" : "red-400";
     if (cells[row][col].val === 0) {
@@ -52,12 +83,11 @@ export default function Home() {
             // onKeyDown={(event) => handleKeyDown(event, rowIndex, colIndex)}
             tabIndex={0}
             key={rowIndex * 9 + colIndex}
-            // ...existing code...
-            className={`flex border text-white dark:text-black 
+            className={`relative flex border-8
               ${cell.color === "blue-400" ? "bg-blue-400" : cell.color === "red-400" ? "bg-red-400" : "bg-white"} 
               rounded-xl justify-center hover:cursor-pointer items-center h-[2.6rem] w-[2.6rem] xs:h-14 xs:w-14 sm:h-14 sm:w-14 md:h-16 md:w-16 xl:h-18 xl:w-18 m-2 select-none`}
           >
-            {cell.val === 0 ? "" : cell.val}
+            {cell.val !== 0 && renderDots(cell.val)}
           </div>
         ))}
       </div>
