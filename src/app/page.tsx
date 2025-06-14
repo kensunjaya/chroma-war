@@ -75,6 +75,7 @@ export default function Home() {
     }
     else {
       // random coordinates but red
+      console.log("Invalid response, choosing random cell");
       const randomRow = Math.floor(Math.random() * rowsCount);
       const randomCol = Math.floor(Math.random() * colsCount);
       if (cells[randomRow][randomCol].color === 'red-400') {
@@ -255,7 +256,7 @@ export default function Home() {
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
-                onClick={() => handleClick(rowIndex, colIndex)}
+                onClick={() => handleClick(rowIndex, colIndex, true)}
                 key={rowIndex * rowsCount + colIndex}
                 className={`p-1 md:p-2 cursor-pointer rounded-xl bg-white justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
               >
