@@ -57,9 +57,16 @@ export default function Home() {
     checkWinner();
     setDisplayedTurn(turn);
     if (turn % 2 !== 0) {
-      promptToGemini(cells).then(response => {
-        translateGeminiResponse(response);
-      });
+      if (turn < 2) {
+        promptToGemini(cells, true).then(response => {
+          translateGeminiResponse(response);
+        });
+      }
+      else {
+        promptToGemini(cells, false).then(response => {
+          translateGeminiResponse(response);
+        });
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing]);
@@ -70,7 +77,13 @@ export default function Home() {
       const row = parseInt(match[1], 10);
       const col = parseInt(match[2], 10);
       if (row >= 0 && row < rowsCount && col >= 0 && col < colsCount) {
-        handleClick(row, col);
+        if (cells[row][col].color === 'white' && turn > 1 || cells[row][col].color === 'blue-400') {
+          translateGeminiResponse("Invalid move. Random move will be made.");
+        }
+        else {
+          handleClick(row, col);
+        }
+        
       }
     }
     else {
