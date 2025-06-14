@@ -54,7 +54,8 @@ export default function Home() {
 
   useEffect(() => {
     if (isProcessing) return;
-    checkWinner();
+    const win = checkWinner();
+    if (win) return;
     setDisplayedTurn(turn);
     if (turn % 2 !== 0) {
       if (turn < 2) {
@@ -83,7 +84,9 @@ export default function Home() {
         else {
           handleClick(row, col);
         }
-        
+      }
+      else {
+        translateGeminiResponse("Invalid coordinates. Random move will be made.");
       }
     }
     else {
@@ -95,6 +98,7 @@ export default function Home() {
         handleClick(randomRow, randomCol);
       }
       else {
+        // first move
         if (cells[randomRow][randomCol].color === 'white' && turn < 2) {
           handleClick(randomRow, randomCol);
         }
@@ -107,13 +111,15 @@ export default function Home() {
 
   const checkWinner = () => {
     if (turn < 2) {
-      return;
+      return false;
     }
     if (colorCount['blue-400'] === 0) {
       setWinner('red-400');
+      return true;
     }
     else if (colorCount['red-400'] === 0) {
       setWinner('blue-400');
+      return true;
     }
   }
 
