@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
 import { Dots } from '../components/Dots';
 import { sleep } from '@/utils/FunctionUtils';
+import Modal from '@/components/Modal';
 
 // BurstDot component
 const BurstDot = ({ direction, color, onComplete }: {
@@ -35,23 +36,59 @@ const BurstDot = ({ direction, color, onComplete }: {
 const rowsCount: number = 6;
 const colsCount: number = 6;
 
+
 // Main Component
 export default function Home() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
   const [turn, setTurn] = useState(0);
+  const [winner, setWinner] = useState<Color | null>(null);
   const [displayedTurn, setDisplayedTurn] = useState(0);
   const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
+  const [colorCount, setColorCount] = useState<{ [key in Color]: number }>({
+    'white': rowsCount * colsCount,
+    'blue-400': 0,
+    'red-400': 0,
+  });
 
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     if (isProcessing) return;
+    checkWinner();
     setDisplayedTurn(turn);
   }, [isProcessing]);
 
+  const checkWinner = () => {
+    console.log(colorCount);
+    if (turn < 2) {
+      return;
+    }
+    if (colorCount['blue-400'] === 0) {
+      setWinner('red-400');
+    }
+    else if (colorCount['red-400'] === 0) {
+      setWinner('blue-400');
+    }
+  }
+
+  const resetGame = () => {
+    setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
+    setTurn(0);
+    colorCount['blue-400'] = 0;
+    colorCount['red-400'] = 0;
+    colorCount['white'] = rowsCount * colsCount;
+    setColorCount({ ...colorCount });
+    setDisplayedTurn(0);
+    setIsProcessing(false);
+    setWinner(null);
+    setBurstDots([]);
+  }
+
   const handleClick = async (row: number, col: number) => {
     if (isProcessing) return; // Prevent user action while processing
-
+    if (navigator.vibrate) {
+      navigator.vibrate(100);
+    }
     const color: Color = turn % 2 === 0 ? 'blue-400' : 'red-400';
     const cell = cells[row][col];
 
@@ -59,7 +96,7 @@ export default function Home() {
     if (cell.color !== 'white' && cell.color !== color) return;
     setIsProcessing(true); // start processing
     setTurn((prev) => prev + 1);
-    await recursiveFill(row, col, color, 1000, true); // use the originally calculated `color`
+    await recursiveFill(row, col, color, 750, true); // use the originally calculated `color`
     setIsProcessing(false);
   };
 
@@ -88,6 +125,16 @@ export default function Home() {
     else {
       newCells[row][col].val = 3;
     }
+
+    if (newCells[row][col].color === 'white') {
+      colorCount[color] += 1;
+    }
+    else if (newCells[row][col].color !== color) {
+      colorCount[newCells[row][col].color] -= 1;
+      colorCount[color] += 1;
+    }
+    setColorCount({ ...colorCount });
+
     newCells[row][col].color = color;
     if (isUserAction) {
       setCells([...newCells]);
@@ -97,7 +144,14 @@ export default function Home() {
     setCells([...newCells]);
     if (newCells[row][col].val >= 4) {
       newCells[row][col].val = 0;
+      colorCount[newCells[row][col].color] -= 1;
+      setColorCount({ ...colorCount });
       newCells[row][col].color = 'white';
+      if (navigator.vibrate) {
+        navigator.vibrate(200);
+      }
+
+
 
       // draw burst animation
       if (row === 0 && col === 0) {
@@ -148,45 +202,56 @@ export default function Home() {
 
   return (
     <main className="font-sans min-h-screen w-screen">
-      <div className="flex flex-row text-3xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-4xl text-center justify-center items-center pt-5">
-        <h1 className="text-center hover:cursor-default font-bold">{"Chr⦿ma War"}</h1>
-      </div>
-      <div className="flex flex-col items-center py-3 sm:py-4 font-sans">
-        <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
-          {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
-            <button
-              onClick={() => handleClick(rowIndex, colIndex)}
-              key={rowIndex * rowsCount + colIndex}
-              className={`p-1 md:p-2 cursor-pointer rounded-xl bg-white justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
-            >
-              <div
-                className={`relative flex justify-center items-center w-full h-full`}
-              >
-                <div className={`transition-all duration-200 absolute inset-0 rounded-full ${cell.color === 'blue-400' ? 'bg-blue-400' : cell.color === 'red-400' ? 'bg-red-400' : 'bg-white'}`} />
-                {cell.val !== 0 && Dots(cell.val)}
-                {burstDots
-                  .filter((b) => b.row === rowIndex && b.col === colIndex)
-                  .map((b) => (
-                    <BurstDot
-                      key={b.dot.id}
-                      direction={b.dot.direction}
-                      color={b.dot.color}
-                      onComplete={() =>
-                        setBurstDots((prev) => prev.filter((x) => x.dot.id !== b.dot.id))
-                      }
-                    />
-                  ))
-                }
-              </div>
-            </button>
-            ))
-          )}
+      {winner && (
+        <Modal 
+          title={winner === 'blue-400' ? 'Blue Wins!' : 'Red Wins!'}
+          body={"Press the button below to play again."}
+          buttonLabel="Play Again"
+          isLoading={false}
+          setState={() => resetGame()}
+        />
+      )}
+      <div className={`z-10 ${winner && 'blur-[0.1rem] opacity-30 transition duration-300 ease-in-out'}`}>
+        <div className="flex flex-row text-3xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-4xl text-center justify-center items-center pt-5">
+          <h1 className="text-center hover:cursor-default font-bold">{"Chr⦿ma War"}</h1>
         </div>
-      </div>
-      <div>
-        <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg mt-4`}>
-          {displayedTurn % 2 === 0 ? 'Blue\'s turn' : 'Red\'s turn'}
-        </p>
+        <div className="flex flex-col items-center py-3 sm:py-4 font-sans">
+          <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
+            {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
+              <button
+                onClick={() => handleClick(rowIndex, colIndex)}
+                key={rowIndex * rowsCount + colIndex}
+                className={`p-1 md:p-2 cursor-pointer rounded-xl bg-white justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
+              >
+                <div
+                  className={`relative flex justify-center items-center w-full h-full`}
+                >
+                  <div className={`transition-all duration-200 absolute inset-0 rounded-full ${cell.color === 'blue-400' ? 'bg-blue-400' : cell.color === 'red-400' ? 'bg-red-400' : 'bg-white'}`} />
+                  {cell.val !== 0 && Dots(cell.val)}
+                  {burstDots
+                    .filter((b) => b.row === rowIndex && b.col === colIndex)
+                    .map((b) => (
+                      <BurstDot
+                        key={b.dot.id}
+                        direction={b.dot.direction}
+                        color={b.dot.color}
+                        onComplete={() =>
+                          setBurstDots((prev) => prev.filter((x) => x.dot.id !== b.dot.id))
+                        }
+                      />
+                    ))
+                  }
+                </div>
+              </button>
+              ))
+            )}
+          </div>
+        </div>
+        <div>
+          <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg mt-4`}>
+            {displayedTurn % 2 === 0 ? 'Blue\'s turn' : 'Red\'s turn'}
+          </p>
+        </div>
       </div>
     </main>
   );
