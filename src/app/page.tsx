@@ -5,6 +5,10 @@ import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
 import { Dots } from '../components/Dots';
 import { sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
+import { promptToGemini } from '@/utils/GeminiBot';
+
+const rowsCount: number = 6;
+const colsCount: number = 6;
 
 // BurstDot component
 const BurstDot = ({ direction, color, onComplete }: {
@@ -33,10 +37,6 @@ const BurstDot = ({ direction, color, onComplete }: {
   );
 };
 
-const rowsCount: number = 6;
-const colsCount: number = 6;
-
-
 // Main Component
 export default function Home() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
@@ -56,7 +56,40 @@ export default function Home() {
     if (isProcessing) return;
     checkWinner();
     setDisplayedTurn(turn);
+    if (turn % 2 !== 0) {
+      promptToGemini(cells).then(response => {
+        translateGeminiResponse(response);
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing]);
+
+  const translateGeminiResponse = (response: string) => {
+    const match = response.match(/(\d+),(\d+)/);
+    if (match) {
+      const row = parseInt(match[1], 10);
+      const col = parseInt(match[2], 10);
+      if (row >= 0 && row < rowsCount && col >= 0 && col < colsCount) {
+        handleClick(row, col);
+      }
+    }
+    else {
+      // random coordinates but red
+      const randomRow = Math.floor(Math.random() * rowsCount);
+      const randomCol = Math.floor(Math.random() * colsCount);
+      if (cells[randomRow][randomCol].color === 'red-400') {
+        handleClick(randomRow, randomCol);
+      }
+      else {
+        if (cells[randomRow][randomCol].color === 'white' && turn < 2) {
+          handleClick(randomRow, randomCol);
+        }
+        else {
+          translateGeminiResponse(response);
+        }
+      }
+    }
+  }
 
   const checkWinner = () => {
     console.log(colorCount);
@@ -84,7 +117,10 @@ export default function Home() {
     setBurstDots([]);
   }
 
-  const handleClick = async (row: number, col: number) => {
+  const handleClick = async (row: number, col: number, isUserAction: boolean = false) => {
+    if (isUserAction && turn % 2 !== 0) {
+      return; // Prevent user action if it's not their turn
+    }
     if (isProcessing) return; // Prevent user action while processing
     if (navigator.vibrate) {
       navigator.vibrate(50);
@@ -213,6 +249,9 @@ export default function Home() {
         <div className="flex flex-row text-3xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-4xl text-center justify-center items-center pt-5">
           <h1 className="text-center hover:cursor-default font-bold">{"Chr⦿ma War"}</h1>
         </div>
+        <div className="flex flex-row font-semibold text-md xs:text-md sm:text-md md:text-lg lg:text-lg xl:text-lg text-center justify-center items-center pt-2">
+          {"Versus AI"}
+        </div>
         <div className="flex flex-col items-center py-3 sm:py-4 font-sans">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
@@ -246,8 +285,8 @@ export default function Home() {
           </div>
         </div>
         <div>
-          <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg mt-4`}>
-            {displayedTurn % 2 === 0 ? 'Blue\'s turn' : 'Red\'s turn'}
+          <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg font-semibold mt-4`}>
+            {displayedTurn % 2 === 0 ? 'Blue\'s turn' : 'Red\'s turn (AI)'}
           </p>
         </div>
       </div>
