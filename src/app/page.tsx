@@ -92,7 +92,6 @@ export default function Home() {
   }
 
   const checkWinner = () => {
-    console.log(colorCount);
     if (turn < 2) {
       return;
     }
