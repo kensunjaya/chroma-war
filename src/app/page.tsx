@@ -75,7 +75,7 @@ export default function Home() {
     }
     else {
       // random coordinates but red
-      console.log("Invalid response, choosing random cell");
+      console.log(response);
       const randomRow = Math.floor(Math.random() * rowsCount);
       const randomCol = Math.floor(Math.random() * colsCount);
       if (cells[randomRow][randomCol].color === 'red-400') {

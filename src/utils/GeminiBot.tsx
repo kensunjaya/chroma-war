@@ -9,7 +9,7 @@ const rule = `
   You are an expert Chroma War player. Chroma War is a 6x6 chain reaction strategy game between two players: Blue (B) and Red (R). Each cell contains a value from 0 to 4 and a color: B (blue), R (red), or N (neutral). The grid is represented as (value,color), such as (2,B) or (0,N).
 
   Game Rules:
-  1. A player can only tap a cell with their own color. Neutral can only be tapped if there's no color of yours.
+  1. A player can only tap a cell with their own color. Neutral can only be tapped if there's no color of yours but avoid tapping 0,0 for the first move.
   2. Tapping a cell increases its value by 1 and sets its color to the player's color.
   3. If a cell reaches 4, it explodes:
     - The cell becomes (0,N) and cannot be tapped again.
@@ -41,7 +41,7 @@ export async function promptToGemini(cells: Cell[][]): Promise<string> {
     return response.text ?? "";
   } catch (error) {
     console.error("Unexpected Error:", error);
-    return "";
+    return error instanceof Error ? error.message : "An unexpected error occurred.";
   }
 }
 
