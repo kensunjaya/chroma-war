@@ -87,7 +87,7 @@ export default function Home() {
   const handleClick = async (row: number, col: number) => {
     if (isProcessing) return; // Prevent user action while processing
     if (navigator.vibrate) {
-      navigator.vibrate(100);
+      navigator.vibrate(50);
     }
     const color: Color = turn % 2 === 0 ? 'blue-400' : 'red-400';
     const cell = cells[row][col];
@@ -148,10 +148,8 @@ export default function Home() {
       setColorCount({ ...colorCount });
       newCells[row][col].color = 'white';
       if (navigator.vibrate) {
-        navigator.vibrate(200);
+        navigator.vibrate(50);
       }
-
-
 
       // draw burst animation
       if (row === 0 && col === 0) {
