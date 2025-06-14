@@ -1,8 +1,9 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
-import { Dots } from './components/Dots';
+import { Dots } from '../components/Dots';
+import { sleep } from '@/utils/FunctionUtils';
 
 // BurstDot component
 const BurstDot = ({ direction, color, onComplete }: {
@@ -38,16 +39,28 @@ const colsCount: number = 6;
 export default function Home() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
   const [turn, setTurn] = useState(0);
+  const [displayedTurn, setDisplayedTurn] = useState(0);
   const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
 
-  const handleClick = (row: number, col: number) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    if (isProcessing) return;
+    setDisplayedTurn(turn);
+  }, [isProcessing]);
+
+  const handleClick = async (row: number, col: number) => {
+    if (isProcessing) return; // Prevent user action while processing
+
     const color: Color = turn % 2 === 0 ? 'blue-400' : 'red-400';
     const cell = cells[row][col];
 
     if (cell.color === 'white' && turn > 1) return;
     if (cell.color !== 'white' && cell.color !== color) return;
-    setTurn(turn + 1);
-    recursiveFill(row, col, color, 1000, true); // use the originally calculated `color`
+    setIsProcessing(true); // start processing
+    setTurn((prev) => prev + 1);
+    await recursiveFill(row, col, color, 1000, true); // use the originally calculated `color`
+    setIsProcessing(false);
   };
 
   const addBurst = (row: number, col: number, directions: Direction[], color: Exclude<Color, 'white'>) => {
@@ -67,7 +80,7 @@ export default function Home() {
     });
   };
 
-  const recursiveFill = (row: number, col: number, color: Color, delay: number, isUserAction: boolean = false) => {
+  const recursiveFill = async (row: number, col: number, color: Color, delayMs: number, isUserAction: boolean = false): Promise<void> => {
     const newCells = [...cells];
     if (turn > 1) {
       newCells[row][col].val += 1;
@@ -79,64 +92,66 @@ export default function Home() {
     if (isUserAction) {
       setCells([...newCells]);
     }
-    setTimeout(() => {
-      setCells([...newCells]);
-      if (newCells[row][col].val >= 4) {
-        newCells[row][col].val = 0;
-        newCells[row][col].color = 'white';
 
-        // draw burst animation
-        if (row === 0 && col === 0) {
-          addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'white'>);
-        }
-        else if (row === 0 && col === colsCount - 1) {
-          addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'white'>);
-        }
-        else if (row === rowsCount - 1 && col === 0) {
-          addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'white'>);
-        }
-        else if (row === rowsCount - 1 && col === colsCount - 1) {
-          addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'white'>);
-        }
-        else if (row === 0) {
-          addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'white'>);
-        }
-        else if (row === rowsCount - 1) {
-          addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'white'>);
-        }
-        else if (col === 0) {
-          addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'white'>);
-        }
-        else if (col === colsCount - 1) {
-          addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'white'>);
-        }
-        else {
-          addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'white'>);
-        }
+    await sleep(delayMs);
+    setCells([...newCells]);
+    if (newCells[row][col].val >= 4) {
+      newCells[row][col].val = 0;
+      newCells[row][col].color = 'white';
 
-        // now recursively fill adjacent cells
-        if (row > 0) {
-          recursiveFill(row - 1, col, color, delay);
-        }
-        if (row < rowsCount - 1) {
-          recursiveFill(row + 1, col, color, delay);
-        } 
-        if (col > 0) {
-          recursiveFill(row, col - 1, color, delay);
-        }
-        if (col < colsCount - 1) {
-          recursiveFill(row, col + 1, color, delay);
-        }
+      // draw burst animation
+      if (row === 0 && col === 0) {
+        addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'white'>);
       }
-    }, delay);
+      else if (row === 0 && col === colsCount - 1) {
+        addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'white'>);
+      }
+      else if (row === rowsCount - 1 && col === 0) {
+        addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'white'>);
+      }
+      else if (row === rowsCount - 1 && col === colsCount - 1) {
+        addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'white'>);
+      }
+      else if (row === 0) {
+        addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'white'>);
+      }
+      else if (row === rowsCount - 1) {
+        addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'white'>);
+      }
+      else if (col === 0) {
+        addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'white'>);
+      }
+      else if (col === colsCount - 1) {
+        addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'white'>);
+      }
+      else {
+        addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'white'>);
+      }
+
+      const promises = [];
+      // now recursively fill adjacent cells
+      if (row > 0) {
+        promises.push(recursiveFill(row - 1, col, color, delayMs));
+      }
+      if (row < rowsCount - 1) {
+        promises.push(recursiveFill(row + 1, col, color, delayMs));
+      } 
+      if (col > 0) {
+        promises.push(recursiveFill(row, col - 1, color, delayMs));
+      }
+      if (col < colsCount - 1) {
+        promises.push(recursiveFill(row, col + 1, color, delayMs));
+      }
+      await Promise.all(promises); // wait for all bursts to finish
+    }
   };
 
   return (
-    <main className="font-sans">
+    <main className="font-sans min-h-screen w-screen">
       <div className="flex flex-row text-3xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-4xl text-center justify-center items-center pt-5">
         <h1 className="text-center hover:cursor-default font-bold">{"Chr⦿ma War"}</h1>
       </div>
-      <div className="flex flex-col items-center min-h-screen py-3 sm:py-4 font-sans">
+      <div className="flex flex-col items-center py-3 sm:py-4 font-sans">
         <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
           {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
             <button
@@ -167,6 +182,11 @@ export default function Home() {
             ))
           )}
         </div>
+      </div>
+      <div>
+        <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg mt-4`}>
+          {displayedTurn % 2 === 0 ? 'Blue\'s turn' : 'Red\'s turn'}
+        </p>
       </div>
     </main>
   );
