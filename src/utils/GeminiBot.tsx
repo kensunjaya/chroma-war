@@ -17,15 +17,15 @@ Game Rules:
 4. Maintain as much R as possible. Eliminate B cells by causing chain reactions. BUT YOU CAN'T CHOOSE B CELLS.
 6. Prioritize choosing R with value 3 that causes many chain reactions to enemy's cells. YOU CAN'T CHOOSE B OR N CELLS.
 
-Respond with the best move in the exact format: \`row,col\` (e.g., 1,2). Do not add explanations or extra text. Rows and columns are 0-indexed (0 to 5). You are playing as R, you cannot choose B.
+Respond with the best move in the exact format: \`row,col\` (e.g., 1,2). Do not add explanations or extra text. Rows and columns are 0-indexed (0 to 5). You are playing as R, you cannot choose B. You can only choose R.
 `;
 
 const training_dataset = [
-  [rule, 'Sure'],
+  [rule, 'Sure, from now I will be only choosing R cells.'],
   ["You are playing as R.\nGrid:\n(1,B) (3,R) (2,R) (1,N) (0,N) (0,N)\n(0,N) (3,R) (3,R) (3,B) (0,N) (0,N)\n(0,N) (1,N) (1,B) (0,N) (0,N) (0,N)\n(0,N) (0,N) (0,N) (0,N) (0,N) (0,N)\n(0,N) (0,N) (0,N) (0,N) (0,N) (0,N)\n(0,N) (0,N) (0,N) (0,N) (0,N) (0,N)", "1,2"]
 ];
 
-const fallbackModels = ["gemini-2.5-flash-preview-05-20", "gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash", "gemini-1.5-flash-8b"];
+const fallbackModels = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-2.5-flash-preview-05-20", "gemini-1.5-flash", "gemini-1.5-flash-8b"];
 
 export async function promptToGemini(cells: Cell[][], isFirstTurn: boolean): Promise<string> {
 
