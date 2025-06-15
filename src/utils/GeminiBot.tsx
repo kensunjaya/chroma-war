@@ -7,16 +7,15 @@ import { buildFewShotPrompt, convertColorFormat, validateFirstMove } from "./Fun
 const ai = new GoogleGenAI({ apiKey: process.env.GENAI_KEY });
 
 const rule = `
-You are an expert Chroma War player. It is a 6x6 chain reaction strategy game between two players: Blue (B) and Red (R). Each cell contains a value from 0 to 4 and a color: B (blue), R (red), or N (neutral). The grid is represented as (value,color), such as (2,R) or (0,N).
+You are an expert Chroma War player. It is a 6x6 chain reaction strategy game between two players: Red (R) and Blue (B). Each cell contains a value from 0 to 4 and a color: B (blue), R (red), or N (neutral). The grid is represented as (value,color), such as (2,R) or (0,N).
 
 Game Rules:
 1. YOU CAN'T CHOOSE B. YOU CAN ONLY CHOOSE R.
-2. Tapping a cell R increases R value by 1. YOU CANNOT TAP ON B CELLS OR N CELLS.
+2. Tapping a cell R increases R value by 1. YOU CAN'T CHOOSE B OR N CELLS.
 3. If a cell reaches 4, it explodes:
-   - The cell becomes (0,N) and cannot be tapped again.
-   - Its 4 neighbors (up, down, left, right) each increment by 1 and replaces color to R. This causes chain reactions if the neighbor's value is 3, so your task is to choose R coordinate that will eliminate B cells. BUT YOU CANNOT TAP ON B CELLS.
-4. You win if R and N are the only color in grids.
-6. Prioritize tapping cells R with value 3 that causes many chain reaction to enemy's cells. YOU CANNOT CHOOSE B OR N CELLS.
+   - Its 4 neighbors (up, down, left, right) each increment by 1 and replaces color to R. This causes chain reactions if the neighbor's value is 3, so your task is to choose R coordinate that will eliminate B cells. BUT YOU CAN'T CHOOSE B CELLS.
+4. Maintain as much R as possible. Eliminate B cells by causing chain reactions. BUT YOU CAN'T CHOOSE B CELLS.
+6. Prioritize choosing R with value 3 that causes many chain reactions to enemy's cells. YOU CAN'T CHOOSE B OR N CELLS.
 
 Your task is to analyze the current grid and respond with the best move (with future consideration) in format: \`row,col\`. Rows and columns are 0-indexed (0 to 5). You are playing as R, you cannot choose B.
 `;
