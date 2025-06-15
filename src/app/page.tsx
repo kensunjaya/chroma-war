@@ -42,6 +42,7 @@ export default function Home() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
+  const [aiModel, setAiModel] = useState<string>('unknown');
   const [displayedTurn, setDisplayedTurn] = useState(0);
   const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
   const [colorCount, setColorCount] = useState<{ [key in Color]: number }>({
@@ -73,10 +74,13 @@ export default function Home() {
   }, [isProcessing]);
 
   const translateGeminiResponse = (response: string) => {
-    const match = response.match(/(\d+),(\d+)/);
+    // row,col,modelname
+    const match = response.match(/^\s*(\d+),\s*(\d+),\s*([^\s,]+)\s*$/);
+    if (winner) return;
     if (match) {
       const row = parseInt(match[1], 10);
       const col = parseInt(match[2], 10);
+      setAiModel(match[3] || 'unknown');
       if (row >= 0 && row < rowsCount && col >= 0 && col < colsCount) {
         if (cells[row][col].color === 'white' && turn > 1 || cells[row][col].color === 'blue-400') {
           translateGeminiResponse("Invalid move. Random move will be made.");
@@ -305,7 +309,7 @@ export default function Home() {
         </div>
         <div>
           <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg font-semibold mt-4`}>
-            {displayedTurn % 2 === 0 ? 'Blue\'s turn' : 'Red\'s turn (AI)'}
+            {displayedTurn % 2 === 0 ? 'Blue\'s turn' : `Red\'s turn${aiModel === 'unknown' ? '' : ` (${aiModel})`}`}
           </p>
         </div>
       </div>
