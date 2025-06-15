@@ -268,9 +268,9 @@ export default function Home() {
           setState={() => resetGame()}
         />
       )}
-      <div className={`z-10 ${winner && 'blur-[0.1rem] opacity-30 transition duration-300 ease-in-out'}`}>
+      <div className={`z-10 bg-black ${winner && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'}`}>
         <div className="flex flex-row text-3xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-4xl text-center justify-center items-center pt-5">
-          <h1 className="text-center hover:cursor-default font-bold">{"Chr⦿ma War"}</h1>
+          <h1 className="text-center hover:cursor-default font-bold">{"Chr⊙ma War"}</h1>
         </div>
         <div className="flex flex-row font-semibold text-md xs:text-md sm:text-md md:text-lg lg:text-lg xl:text-lg text-center justify-center items-center pt-2">
           {"Versus AI"}

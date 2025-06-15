@@ -17,7 +17,7 @@ Game Rules:
 4. Maintain as much R as possible. Eliminate B cells by causing chain reactions. BUT YOU CAN'T CHOOSE B CELLS.
 6. Prioritize choosing R with value 3 that causes many chain reactions to enemy's cells. YOU CAN'T CHOOSE B OR N CELLS.
 
-Your task is to analyze the current grid and respond with the best move (with future consideration) in format: \`row,col\`. Rows and columns are 0-indexed (0 to 5). You are playing as R, you cannot choose B.
+Respond with the best move in the exact format: \`row,col\` (e.g., 1,2). Do not add explanations or extra text. Rows and columns are 0-indexed (0 to 5). You are playing as R, you cannot choose B.
 `;
 
 const training_dataset = [
@@ -25,9 +25,10 @@ const training_dataset = [
   ["You are playing as R.\nGrid:\n(1,B) (3,R) (2,R) (1,N) (0,N) (0,N)\n(0,N) (3,R) (3,R) (3,B) (0,N) (0,N)\n(0,N) (1,N) (1,B) (0,N) (0,N) (0,N)\n(0,N) (0,N) (0,N) (0,N) (0,N) (0,N)\n(0,N) (0,N) (0,N) (0,N) (0,N) (0,N)\n(0,N) (0,N) (0,N) (0,N) (0,N) (0,N)", "1,2"]
 ];
 
-const fallbackModels = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash", "gemini-1.5-flash-8b"];
+const fallbackModels = ["gemini-2.5-flash-preview-05-20", "gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-1.5-flash", "gemini-1.5-flash-8b"];
 
 export async function promptToGemini(cells: Cell[][], isFirstTurn: boolean): Promise<string> {
+
   if (isFirstTurn) {
     return moveFistTurn(cells);
   }
@@ -41,15 +42,19 @@ export async function promptToGemini(cells: Cell[][], isFirstTurn: boolean): Pro
   for (const modelName of fallbackModels) {
     try {
       const response = await ai.models.generateContent({
+        config: {
+          temperature: 0.2,
+          topK: 1,
+          topP: 0.8,
+        },
         model: modelName,
         contents: [{ text: prompt }],
       });
 
-      // remove any leading or trailing whitespace
-      const trimmedText = response.text?.trim();
-      const text = trimmedText + "," + modelName;
-      console.log(`(${modelName}):`, text);
-      return text;
+      const text = response.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+      const finalText = text + "," + modelName;
+      console.log(`(${modelName}):`, finalText);
+      return finalText;
 
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
