@@ -2,10 +2,9 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
-import { Dots } from '../components/Dots';
 import { sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
-import { promptToGemini } from '@/utils/GeminiBot';
+import { Dots } from '@/components/Dots';
 import { Navigation } from '@/components/Navigation';
 
 const rowsCount: number = 6;
@@ -43,7 +42,6 @@ export default function Home() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
-  const [aiModel, setAiModel] = useState<string>('unknown');
   const [displayedTurn, setDisplayedTurn] = useState(0);
   const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
   const [colorCount, setColorCount] = useState<{ [key in Color]: number }>({
@@ -59,60 +57,9 @@ export default function Home() {
     const win = checkWinner();
     if (win) return;
     setDisplayedTurn(turn);
-    if (turn % 2 !== 0) {
-      if (turn < 2) {
-        promptToGemini(cells, true).then(response => {
-          translateGeminiResponse(response);
-        });
-      }
-      else {
-        promptToGemini(cells, false).then(response => {
-          translateGeminiResponse(response);
-        });
-      }
-    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing]);
 
-  const translateGeminiResponse = (response: string) => {
-    // row,col,modelname
-    const match = response.match(/^\s*(\d+),\s*(\d+),\s*([^\s,]+)\s*$/);
-    if (winner) return;
-    if (match) {
-      const row = parseInt(match[1], 10);
-      const col = parseInt(match[2], 10);
-      setAiModel(match[3] || 'unknown');
-      if (row >= 0 && row < rowsCount && col >= 0 && col < colsCount) {
-        if (cells[row][col].color === 'white' && turn > 1 || cells[row][col].color === 'blue-400') {
-          translateGeminiResponse("Invalid move. Random move will be made.");
-        }
-        else {
-          handleClick(row, col);
-        }
-      }
-      else {
-        translateGeminiResponse("Invalid coordinates. Random move will be made.");
-      }
-    }
-    else {
-      // random coordinates but red
-      console.log(response);
-      const randomRow = Math.floor(Math.random() * rowsCount);
-      const randomCol = Math.floor(Math.random() * colsCount);
-      if (cells[randomRow][randomCol].color === 'red-400') {
-        handleClick(randomRow, randomCol);
-      }
-      else {
-        // first move
-        if (cells[randomRow][randomCol].color === 'white' && turn < 2) {
-          handleClick(randomRow, randomCol);
-        }
-        else {
-          translateGeminiResponse(response);
-        }
-      }
-    }
-  }
 
   const checkWinner = () => {
     if (turn < 2) {
@@ -141,10 +88,7 @@ export default function Home() {
     setBurstDots([]);
   }
 
-  const handleClick = async (row: number, col: number, isUserAction: boolean = false) => {
-    if (isUserAction && turn % 2 !== 0) {
-      return; // Prevent user action if it's not their turn
-    }
+  const handleClick = async (row: number, col: number) => {
     if (isProcessing) return; // Prevent user action while processing
     if (navigator.vibrate) {
       navigator.vibrate(50);
@@ -241,7 +185,7 @@ export default function Home() {
       }
 
       const promises = [];
-      // now recursively fill adjacent cells
+
       if (row > 0) {
         promises.push(recursiveFill(row - 1, col, color, delayMs));
       }
@@ -271,14 +215,14 @@ export default function Home() {
       )}
       <div className={`z-10 bg-black ${winner && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'}`}>
         <div className="flex flex-row text-3xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-4xl text-center justify-center items-center pt-5">
-          <h1 className="text-center hover:cursor-default font-bold">{"Chr⊙ma War"}</h1>
+          <h1 className="text-center hover:cursor-default font-bold">{"Chr⊙ma War Multiplayer"}</h1>
         </div>
         <Navigation />
         <div className="flex flex-col items-center py-3 sm:py-4 font-sans">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
-                onClick={() => handleClick(rowIndex, colIndex, true)}
+                onClick={() => handleClick(rowIndex, colIndex)}
                 key={rowIndex * rowsCount + colIndex}
                 className={`p-1 md:p-2 cursor-pointer rounded-xl bg-white justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
               >
@@ -308,7 +252,7 @@ export default function Home() {
         </div>
         <div>
           <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg font-semibold mt-4`}>
-            {displayedTurn % 2 === 0 ? 'Blue\'s turn' : `Red\'s turn${aiModel === 'unknown' ? '' : ` (${aiModel})`}`}
+            {displayedTurn % 2 === 0 ? 'Blue\'s turn' : `Red\'s turn`}
           </p>
         </div>
       </div>
