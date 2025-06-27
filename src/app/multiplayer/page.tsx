@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
+import { BurstDotStructure, Cell, Color, Direction, Room } from '@/interfaces/Types';
 import { sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
 import { Dots } from '@/components/Dots';
@@ -9,11 +9,6 @@ import { Navigation } from '@/components/Navigation';
 import { io } from 'socket.io-client';
 
 const socket = io("http://localhost:3001");
-
-socket.on("connect", () => {
-  console.log("Connected to game server!", socket.id);
-});
-
 const rowsCount: number = 6;
 const colsCount: number = 6;
 
@@ -48,51 +43,121 @@ const BurstDot = ({ direction, color, onComplete }: {
 export default function Home() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
   const [turn, setTurn] = useState(0);
+  const [isAllPlayersReady, setIsAllPlayersReady] = useState(false);
+  const [playerColor, setPlayerColor] = useState<Color>('white');
+  const [playerName, setPlayerName] = useState<string | null>("Chroma Player");
+  const [tempName, setTempName] = useState<string>("");
+  const [roomId, setRoomId] = useState<string>("");
+  const [roomIds, setRoomIds] = useState<string[]>([]);
   const [winner, setWinner] = useState<Color | null>(null);
-  const [displayedTurn, setDisplayedTurn] = useState(0);
+  const [isWaitingForPlayer, setIsWaitingForPlayer] = useState(false);
   const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
-  const [colorCount, setColorCount] = useState<{ [key in Color]: number }>({
-    'white': rowsCount * colsCount,
-    'blue-400': 0,
-    'red-400': 0,
-  });
-
+  const [status, setStatus] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  useEffect(() => {
-    if (isProcessing) return;
-    const win = checkWinner();
-    if (win) return;
-    setDisplayedTurn(turn);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isProcessing]);
-
-
-  const checkWinner = () => {
-    if (turn < 2) {
-      return false;
-    }
-    if (colorCount['blue-400'] === 0) {
-      setWinner('red-400');
-      return true;
-    }
-    else if (colorCount['red-400'] === 0) {
-      setWinner('blue-400');
-      return true;
-    }
+  const savePlayerName = () => {
+    localStorage.setItem("username", tempName);
+    setPlayerName(tempName);
   }
 
+  const handleCreateRoom = () => {
+    socket.emit("create-room", null, (newRoomId: string) => {
+      console.log("Created Room:", newRoomId);
+      setRoomId(newRoomId);
+      setStatus("Waiting for player to join...")
+    });
+  };
+
+  useEffect(() => {
+    alert("This feature is under development. Please try again later.");
+    window.location.href = '/';
+    return;
+    const name = localStorage.getItem("username");
+    if (name) {
+      setPlayerName(name);
+    } else {
+      setPlayerName(null);
+    }
+    // subscribe to socket events
+    socket.on("rooms-list", (rooms: string[]) => {
+      console.log("Available rooms:", rooms);
+      setRoomIds(rooms);
+    });
+    socket.on("connect", () => {
+      console.log("Connected to game server!", socket.id);
+    });
+
+    socket.on("player-joined", (room: Room) => {
+      console.log("Player joined room:", room);
+      const playerIndex = socket.id ? room.players.indexOf(socket.id) : -1;
+      console.log("Player index:", playerIndex);
+      if (playerIndex % 2 === 0) {
+        setPlayerColor('blue-400');
+      }
+      else {
+        setPlayerColor('red-400');
+      }
+      setStatus("✅ Player joined the room!");
+      if (room.players.length >= 2) {
+        setIsAllPlayersReady(true);
+        setStatus("Both players are ready! Game starting...");
+        setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
+      }
+    });
+
+    socket.on("player-left", (room: Room) => {
+      console.log("Player left room:", room);
+      setStatus("❌ Player left the room.");
+    });
+
+    socket.on("state-update", ({ grid, turn, burstSeq, roomId, winner }) => {
+      console.log("BurstSeq", burstSeq);
+      socket.emit("animation-started", roomId);
+      if (burstSeq.length === 1 && burstSeq[0].length === 0) {
+        setCells(grid);
+      }
+      burstSeqHandler(burstSeq, grid, 750, turn - 1).then(() => {
+        setTurn(turn);
+        setTimeout(() => {
+          socket.emit("animation-complete", roomId);
+          setIsProcessing(false);
+          setWinner(winner);
+        }, 750);
+      });
+
+    });
+
+    socket.on("animation-complete", () => {
+      console.log("Animation complete");
+      setIsProcessing(false);
+    });
+
+    socket.on("game-restarted", (grid) => {
+      setIsWaitingForPlayer(false);
+      setCells(grid);
+      setTurn(0);
+      setIsProcessing(false);
+      setWinner(null);
+      setBurstDots([]);
+    });
+
+    setTimeout(() => {
+      socket.emit("get-rooms");
+    }, 500);
+
+    return () => {
+      socket.off("rooms-list");
+      socket.off("connect");
+      socket.off("player-joined");
+      socket.off("player-left");
+      socket.off("state-update");
+      socket.disconnect();
+    };
+  }, []);
+
   const resetGame = () => {
-    setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
-    setTurn(0);
-    colorCount['blue-400'] = 0;
-    colorCount['red-400'] = 0;
-    colorCount['white'] = rowsCount * colsCount;
-    setColorCount({ ...colorCount });
-    setDisplayedTurn(0);
-    setIsProcessing(false);
-    setWinner(null);
-    setBurstDots([]);
+    socket.emit("restart-game", roomId);
+    setIsWaitingForPlayer(true);
   }
 
   const handleClick = async (row: number, col: number) => {
@@ -101,14 +166,24 @@ export default function Home() {
       navigator.vibrate(50);
     }
     const color: Color = turn % 2 === 0 ? 'blue-400' : 'red-400';
+    if (color !== playerColor) return;
     const cell = cells[row][col];
-
     if (cell.color === 'white' && turn > 1) return;
     if (cell.color !== 'white' && cell.color !== color) return;
-    setIsProcessing(true); // start processing
-    setTurn((prev) => prev + 1);
-    await recursiveFill(row, col, color, 750, true); // use the originally calculated `color`
-    setIsProcessing(false);
+    setIsProcessing(true);
+    if (cells[row][col].val === 3) {
+      setCells((prev) => {
+        const newCells = [...prev];
+        newCells[row][col].val = 4;
+        return newCells;
+      });
+    }
+
+    socket.emit("make-move", {
+      roomId,
+      row,
+      col,
+    });
   };
 
   const addBurst = (row: number, col: number, directions: Direction[], color: Exclude<Color, 'white'>) => {
@@ -128,103 +203,299 @@ export default function Home() {
     });
   };
 
-  const recursiveFill = async (row: number, col: number, color: Color, delayMs: number, isUserAction: boolean = false): Promise<void> => {
-    const newCells = [...cells];
-    if (turn > 1) {
-      newCells[row][col].val += 1;
+  const burstSeqHandler = async (
+    bursts: { row: number; col: number }[][],
+    gridAfterBurst: Cell[][],
+    delayMs: number = 750,
+    turn: number
+  ): Promise<void> => {
+    
+    const color = turn % 2 === 0 ? 'blue-400' : 'red-400';
+    for (const seqs of bursts) {
+      if (!Array.isArray(seqs)) continue;
+      await sleep(delayMs);
+      setCells((prev) => {
+      const tempCells = [...prev];
+      for (const { row, col } of seqs) {
+        if (navigator.vibrate) navigator.vibrate(30);
+          
+          tempCells[row][col].val = 0;
+          tempCells[row][col].color = 'white';
+          
+          if (row === 0 && col === 0) {
+            tempCells[row+1][col].val += 1;
+            tempCells[row+1][col].color = color;
+            tempCells[row][col+1].val += 1;
+            tempCells[row][col+1].color = color;
+            addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'white'>);
+          }
+          else if (row === 0 && col === colsCount - 1) {
+            tempCells[row+1][col].val += 1;
+            tempCells[row+1][col].color = color;
+            tempCells[row][col-1].val += 1;
+            tempCells[row][col-1].color = color;
+            addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'white'>);
+          }
+          else if (row === rowsCount - 1 && col === 0) {
+            tempCells[row-1][col].val += 1;
+            tempCells[row-1][col].color = color;
+            tempCells[row][col+1].val += 1;
+            tempCells[row][col+1].color = color;
+            addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'white'>);
+          }
+          else if (row === rowsCount - 1 && col === colsCount - 1) {
+            tempCells[row-1][col].val += 1;
+            tempCells[row-1][col].color = color;
+            tempCells[row][col-1].val += 1;
+            tempCells[row][col-1].color = color;
+            addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'white'>);
+          }
+          else if (row === 0) {
+            tempCells[row+1][col].val += 1;
+            tempCells[row+1][col].color = color;
+            tempCells[row][col-1].val += 1;
+            tempCells[row][col-1].color = color;
+            tempCells[row][col+1].val += 1;
+            tempCells[row][col+1].color = color;
+            addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'white'>);
+          }
+          else if (row === rowsCount - 1) {
+            tempCells[row-1][col].val += 1;
+            tempCells[row-1][col].color = color;
+            tempCells[row][col-1].val += 1;
+            tempCells[row][col-1].color = color;
+            tempCells[row][col+1].val += 1;
+            tempCells[row][col+1].color = color;
+            addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'white'>);
+          }
+          else if (col === 0) {
+            tempCells[row-1][col].val += 1;
+            tempCells[row-1][col].color = color;
+            tempCells[row+1][col].val += 1;
+            tempCells[row+1][col].color = color;
+            tempCells[row][col+1].val += 1;
+            tempCells[row][col+1].color = color;
+            addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'white'>);
+          }
+          else if (col === colsCount - 1) {
+            tempCells[row-1][col].val += 1;
+            tempCells[row-1][col].color = color;
+            tempCells[row+1][col].val += 1;
+            tempCells[row+1][col].color = color;
+            tempCells[row][col-1].val += 1;
+            tempCells[row][col-1].color = color;
+            addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'white'>);
+          }
+          else {
+            tempCells[row-1][col].val += 1;
+            tempCells[row-1][col].color = color;
+            tempCells[row+1][col].val += 1;
+            tempCells[row+1][col].color = color;
+            tempCells[row][col-1].val += 1;
+            tempCells[row][col-1].color = color;
+            tempCells[row][col+1].val += 1;
+            tempCells[row][col+1].color = color;
+            addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'white'>);
+          }
+        }
+         return tempCells;
+      })
     }
-    else {
-      newCells[row][col].val = 3;
-    }
-
-    if (newCells[row][col].color === 'white') {
-      colorCount[color] += 1;
-    }
-    else if (newCells[row][col].color !== color) {
-      colorCount[newCells[row][col].color] -= 1;
-      colorCount[color] += 1;
-    }
-    setColorCount({ ...colorCount });
-
-    newCells[row][col].color = color;
-    if (isUserAction) {
-      setCells([...newCells]);
-    }
-
-    await sleep(delayMs);
-    setCells([...newCells]);
-    if (newCells[row][col].val >= 4) {
-      newCells[row][col].val = 0;
-      colorCount[newCells[row][col].color] -= 1;
-      setColorCount({ ...colorCount });
-      newCells[row][col].color = 'white';
-      if (navigator.vibrate) {
-        navigator.vibrate(50);
-      }
-
-      // draw burst animation
-      if (row === 0 && col === 0) {
-        addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'white'>);
-      }
-      else if (row === 0 && col === colsCount - 1) {
-        addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'white'>);
-      }
-      else if (row === rowsCount - 1 && col === 0) {
-        addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'white'>);
-      }
-      else if (row === rowsCount - 1 && col === colsCount - 1) {
-        addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'white'>);
-      }
-      else if (row === 0) {
-        addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'white'>);
-      }
-      else if (row === rowsCount - 1) {
-        addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'white'>);
-      }
-      else if (col === 0) {
-        addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'white'>);
-      }
-      else if (col === colsCount - 1) {
-        addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'white'>);
-      }
-      else {
-        addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'white'>);
-      }
-
-      const promises = [];
-
-      if (row > 0) {
-        promises.push(recursiveFill(row - 1, col, color, delayMs));
-      }
-      if (row < rowsCount - 1) {
-        promises.push(recursiveFill(row + 1, col, color, delayMs));
-      } 
-      if (col > 0) {
-        promises.push(recursiveFill(row, col - 1, color, delayMs));
-      }
-      if (col < colsCount - 1) {
-        promises.push(recursiveFill(row, col + 1, color, delayMs));
-      }
-      await Promise.all(promises); // wait for all bursts to finish
-    }
+    
+    console.log("Grid after burst:", gridAfterBurst);
+    setCells(gridAfterBurst);
   };
 
+
+  // const recursiveFill = async (row: number, col: number, color: Color, delayMs: number, isUserAction: boolean = false): Promise<void> => {
+  //   const newCells = [...cells];
+  //   if (turn > 1) {
+  //     newCells[row][col].val += 1;
+  //   }
+  //   else {
+  //     newCells[row][col].val = 3;
+  //   }
+
+  //   if (newCells[row][col].color === 'white') {
+  //     colorCount[color] += 1;
+  //   }
+  //   else if (newCells[row][col].color !== color) {
+  //     colorCount[newCells[row][col].color] -= 1;
+  //     colorCount[color] += 1;
+  //   }
+  //   setColorCount({ ...colorCount });
+
+  //   newCells[row][col].color = color;
+  //   if (isUserAction) {
+  //     setCells([...newCells]);
+  //   }
+
+  //   await sleep(delayMs);
+  //   setCells([...newCells]);
+  //   if (newCells[row][col].val >= 4) {
+  //     newCells[row][col].val = 0;
+  //     colorCount[newCells[row][col].color] -= 1;
+  //     setColorCount({ ...colorCount });
+  //     newCells[row][col].color = 'white';
+  //     if (navigator.vibrate) {
+  //       navigator.vibrate(50);
+  //     }
+
+  //     // draw burst animation
+  //     if (row === 0 && col === 0) {
+  //       addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'white'>);
+  //     }
+  //     else if (row === 0 && col === colsCount - 1) {
+  //       addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'white'>);
+  //     }
+  //     else if (row === rowsCount - 1 && col === 0) {
+  //       addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'white'>);
+  //     }
+  //     else if (row === rowsCount - 1 && col === colsCount - 1) {
+  //       addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'white'>);
+  //     }
+  //     else if (row === 0) {
+  //       addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'white'>);
+  //     }
+  //     else if (row === rowsCount - 1) {
+  //       addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'white'>);
+  //     }
+  //     else if (col === 0) {
+  //       addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'white'>);
+  //     }
+  //     else if (col === colsCount - 1) {
+  //       addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'white'>);
+  //     }
+  //     else {
+  //       addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'white'>);
+  //     }
+
+  //     const promises = [];
+
+  //     if (row > 0) {
+  //       promises.push(recursiveFill(row - 1, col, color, delayMs));
+  //     }
+  //     if (row < rowsCount - 1) {
+  //       promises.push(recursiveFill(row + 1, col, color, delayMs));
+  //     } 
+  //     if (col > 0) {
+  //       promises.push(recursiveFill(row, col - 1, color, delayMs));
+  //     }
+  //     if (col < colsCount - 1) {
+  //       promises.push(recursiveFill(row, col + 1, color, delayMs));
+  //     }
+  //     await Promise.all(promises); // wait for all bursts to finish
+  //   }
+  // };
+
+  const handleJoinRoom = (roomId: string) => {
+    interface JoinRoomResponse {
+      error?: string;
+      grid?: Cell[][];
+    }
+
+    socket.emit("join-room", roomId, (response: JoinRoomResponse) => {
+      if (response.error) {
+      setStatus("❌ " + response.error);
+      } else {
+        setStatus("✅ Joined room!");
+        setRoomId(roomId)
+        console.log("Joined Room:", roomId);
+        console.log("Initial game grid:", response.grid);
+        setIsAllPlayersReady(true);
+      }
+    });
+  };
+
+  if (!isAllPlayersReady) {
+    return (
+      <main className="flex justify-center bg-black font-sans w-screen min-h-screen">
+        {!playerName && (
+          <Modal 
+            title={"Fill username"}
+            body={"Other players will see your username."}
+            buttonLabel="Save"
+            isLoading={false}
+            setInput={(val) => {
+              setTempName(val);
+            }}
+            input={tempName}
+            setState={savePlayerName}
+          />
+        )}
+        <div className={`flex flex-col z-10 bg-black ${!playerName && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'} items-center`}>
+          <Navigation currentPage='multiplayer' />
+          
+          <h1 className="text-3xl font-semibold mb-4">{status}</h1>
+          <input
+            type="text"
+            placeholder="Enter Room ID"
+            className="mb-4 px-4 py-2 border border-gray-300 rounded w-64"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                const roomId = (e.target as HTMLInputElement).value;
+                if (roomId) {
+                  handleJoinRoom(roomId);
+                } else {
+                  setStatus("❌ Please enter a valid Room ID.");
+                }
+              }
+            }}
+          />
+          <div className='flex flex-row gap-4'>
+            <button 
+              onClick={() => handleCreateRoom()} 
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 hover:cursor-pointer"
+            >
+              Create Room
+            </button>
+            <button 
+              onClick={() => socket.emit("get-rooms")} 
+              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300 hover:cursor-pointer"
+            >
+              Refresh
+            </button>
+          </div>
+          <div className="flex flex-col mt-4 items-center">
+            <div className="text-xl font-semibold mb-5 text-center">Available Rooms:</div>
+            <div className="flex flex-wrap w-full justify-between px-50">
+              {roomIds.map((id) => (
+                <div key={id} className="mb-1">
+                  <button 
+                    onClick={() => handleJoinRoom(id)} 
+                    className="hover:cursor-pointer hover:bg-gray-900 transition duration-300 border py-5 px-3 rounded-lg min-w-[400px]"
+                  >
+                    {id}
+                  </button>
+                </div>
+              ))}
+            </div> 
+        </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="font-sans min-h-screen w-screen">
+    <main className="flex justify-center font-sans min-h-screen w-screen">
       {winner && (
         <Modal 
-          title={winner === 'blue-400' ? 'Blue Wins!' : 'Red Wins!'}
+          title={winner === playerColor ? '🎉 You Win!' : 'You Lose!'}
           body={"Press the button below to play again."}
-          buttonLabel="Play Again"
-          isLoading={false}
+          buttonLabel={isWaitingForPlayer ? "Waiting for opponent ..." : "Play Again"}
+          isLoading={isWaitingForPlayer}
           setState={() => resetGame()}
         />
       )}
       <div className={`z-10 bg-black ${winner && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'}`}>
-        <div className="flex flex-row text-3xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-4xl text-center justify-center items-center pt-5">
-          <h1 className="text-center hover:cursor-default font-bold">{"Chr⊙ma War Multiplayer"}</h1>
+        <Navigation currentPage='multiplayer' />
+        <div>
+          { playerColor !== 'white' && (
+            <p className={`text-center ${playerColor === 'blue-400' ? 'text-blue-400' : 'text-red-400'} text-lg font-semibold mt-4`}>
+              {`You are playing as ${playerColor === 'blue-400' ? 'Blue' : 'Red'}`}
+            </p>
+          )}
         </div>
-        <Navigation />
         <div className="flex flex-col items-center py-3 sm:py-4 font-sans">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
@@ -258,8 +529,8 @@ export default function Home() {
           </div>
         </div>
         <div>
-          <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg font-semibold mt-4`}>
-            {displayedTurn % 2 === 0 ? 'Blue\'s turn' : `Red\'s turn`}
+          <p className={`text-center ${turn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg font-semibold mt-4`}>
+            {turn % 2 === 0 ? 'Blue\'s turn' : `Red\'s turn`}
           </p>
         </div>
       </div>

@@ -38,7 +38,7 @@ const Modal: React.FC<ModalProps> = ({title, body, buttonLabel, isLoading, input
           {(input === "" || input) && (
             <input 
               type="text" 
-              placeholder="Enter your nickname (optional)" 
+              placeholder="Enter your nickname" 
               className="w-full py-1 outline-1 outline-gray-400 focus:outline-1 focus:outline-blue-500 rounded-md text-center text-black"
               onChange={(e) => setInput && setInput(e.target.value)}
               maxLength={20}
@@ -49,9 +49,9 @@ const Modal: React.FC<ModalProps> = ({title, body, buttonLabel, isLoading, input
             <button
               onClick={() => handleClick()}
               disabled={isLoading}
-              className="px-4 hover:cursor-pointer py-2 w-fit disabled:hover:cursor-default bg-blue-500 disabled:bg-gray-400 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="px-4 hover:cursor-pointer py-2 w-fit transition duration-300 disabled:hover:cursor-default bg-blue-500 disabled:bg-gray-400 text-white text-base font-medium rounded-md shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
             >
-              {isLoading ? "Saving .." : buttonLabel}
+              {buttonLabel}
             </button>
           </div>
         </div>

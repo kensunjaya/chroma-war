@@ -9,3 +9,11 @@ export type BurstDotStructure = {
   direction: Direction;
   color: Exclude<Color, 'white'>;
 };
+
+export type Room = {
+  id: string;
+  players: string[];
+  grid: Cell[][];
+  turn: number;
+  createdAt: Date;
+}

@@ -259,7 +259,7 @@ export default function Home() {
   };
 
   return (
-    <main className="font-sans min-h-screen w-screen">
+    <main className="flex justify-center font-sans min-h-screen w-screen">
       {winner && (
         <Modal 
           title={winner === 'blue-400' ? 'Blue Wins!' : 'Red Wins!'}
@@ -270,10 +270,7 @@ export default function Home() {
         />
       )}
       <div className={`z-10 bg-black ${winner && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'}`}>
-        <div className="flex flex-row text-3xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-4xl text-center justify-center items-center pt-5">
-          <h1 className="text-center hover:cursor-default font-bold">{"Chr⊙ma War"}</h1>
-        </div>
-        <Navigation />
+        <Navigation currentPage='ai' />
         <div className="flex flex-col items-center py-3 sm:py-4 font-sans">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
