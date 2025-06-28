@@ -115,7 +115,7 @@ export default function Home() {
       burstSeqHandler(burstSeq, grid, 750, turn - 1).then(() => {
         setTurn(turn);
         setTimeout(() => {
-          socket.emit("animation-complete", roomId);
+          socket.emit("done-processing", roomId);
           setIsProcessing(false);
           setWinner(winner);
         }, 750);
