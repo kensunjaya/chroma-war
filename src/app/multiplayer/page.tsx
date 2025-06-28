@@ -438,14 +438,14 @@ export default function Home() {
           <div className="flex space-x-4 mb-4">
             <button 
               onClick={() => handleCreateRoom()} 
-              className="px-4 py-2 border-2 border-blue-300 text-blue-300 hover:border-blue-400 hover:text-blue-400 rounded transition duration-300 hover:cursor-pointer"
+              className="px-3 py-2 md:px-4 border-2 border-blue-300 text-blue-300 hover:border-blue-400 hover:text-blue-400 rounded transition duration-300 hover:cursor-pointer"
             >
               Host Room
             </button>
             <input
               type="text"
-              placeholder="Room ID to Join ..."
-              className="px-4 py-2 border border-gray-300 rounded w-64"
+              placeholder="Room ID ..."
+              className="px-2 py-2 md:px-4 border border-gray-300 rounded w-32 md:w-48"
               value={textField}
               onChange={(e) => setTextField(e.target.value)}
               onKeyDown={(e) => {
@@ -466,7 +466,7 @@ export default function Home() {
                   handleJoinRoom(textField);
                 }
               }} 
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 hover:cursor-pointer"
+              className="px-3 py-2 md:px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 hover:cursor-pointer"
             >
               Join
             </button>
