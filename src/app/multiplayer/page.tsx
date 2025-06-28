@@ -6,9 +6,8 @@ import { sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
 import { Dots } from '@/components/Dots';
 import { Navigation } from '@/components/Navigation';
-import { io } from 'socket.io-client';
+import socket from '@/utils/socket';
 
-const socket = io("http://localhost:3001");
 const rowsCount: number = 6;
 const colsCount: number = 6;
 
@@ -69,9 +68,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    alert("This feature is under development. Please try again later.");
-    window.location.href = '/';
-    return;
+    socket.connect();
     const name = localStorage.getItem("username");
     if (name) {
       setPlayerName(name);
@@ -151,6 +148,8 @@ export default function Home() {
       socket.off("player-joined");
       socket.off("player-left");
       socket.off("state-update");
+      socket.off("animation-complete");
+      socket.off("game-restarted");
       socket.disconnect();
     };
   }, []);
