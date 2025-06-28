@@ -11,7 +11,6 @@ import socket from '@/utils/socket';
 const rowsCount: number = 6;
 const colsCount: number = 6;
 
-// BurstDot component
 const BurstDot = ({ direction, color, onComplete }: {
   direction: Direction;
   color: Color;
