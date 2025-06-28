@@ -12,8 +12,8 @@ export const Navigation = ({ currentPage }: NavigationProps) => {
         <h1 className="text-center hover:cursor-default font-bold">{"Chroma War"}</h1>
         <FaGithub className="hover:cursor-pointer" onClick={() => window.open("https://github.com/kensunjaya/", "_blank")} />
       </div>
-      <div className="flex items-center text-lg justify-center p-4 text-white w-full">
-        <nav className="space-x-6 flex flex-row items-center justify-center">
+      <div className="flex items-center text-xs md:text-lg justify-center p-4 text-white w-full">
+        <nav className="justify-around lg:space-x-6 flex flex-row items-center">
           <Link
             href="/"
             className={`hover:cursor-pointer hover:scale-120 transition px-3 rounded-sm ${currentPage === 'ai' && 'text-cyan-700 dark:text-blue-300'}`}
