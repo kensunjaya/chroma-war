@@ -7,6 +7,8 @@ import Modal from '@/components/Modal';
 import { Dots } from '@/components/Dots';
 import { Navigation } from '@/components/Navigation';
 import socket from '@/utils/socket';
+import { IoMdRefresh } from 'react-icons/io';
+import { FaDotCircle } from 'react-icons/fa';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
@@ -45,6 +47,7 @@ export default function Home() {
   const [playerColor, setPlayerColor] = useState<Color>('white');
   const [playerName, setPlayerName] = useState<string | null>("Chroma Player");
   const [tempName, setTempName] = useState<string>("");
+  const [textField, setTextField] = useState<string>("");
   const [roomId, setRoomId] = useState<string>("");
   const [roomIds, setRoomIds] = useState<string[]>([]);
   const [winner, setWinner] = useState<Color | null>(null);
@@ -52,6 +55,13 @@ export default function Home() {
   const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
   const [status, setStatus] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(roomId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const savePlayerName = () => {
     localStorage.setItem("username", tempName);
@@ -93,7 +103,7 @@ export default function Home() {
       else {
         setPlayerColor('red-400');
       }
-      setStatus("✅ Player joined the room!");
+      setStatus("Player joined the room!");
       if (room.players.length >= 2) {
         setIsAllPlayersReady(true);
         setStatus("Both players are ready! Game starting...");
@@ -103,7 +113,7 @@ export default function Home() {
 
     socket.on("player-left", (room: Room) => {
       console.log("Player left room:", room);
-      setStatus("❌ Player left the room.");
+      setStatus("Player left the room.");
     });
 
     socket.on("state-update", ({ grid, turn, burstSeq, roomId, winner }) => {
@@ -424,58 +434,87 @@ export default function Home() {
         <div className={`flex flex-col z-10 bg-black ${!playerName && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'} items-center`}>
           <Navigation currentPage='multiplayer' />
           
-          <h1 className="text-3xl font-semibold mb-4">{status}</h1>
-          <input
-            type="text"
-            placeholder="Enter Room ID"
-            className="mb-4 px-4 py-2 border border-gray-300 rounded w-64"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                const roomId = (e.target as HTMLInputElement).value;
-                if (roomId) {
-                  handleJoinRoom(roomId);
-                } else {
-                  setStatus("❌ Please enter a valid Room ID.");
-                }
-              }
-            }}
-          />
-          <div className='flex flex-row gap-4'>
+          <h1 className="text-xl font-semibold mb-4">{status}</h1>
+          <div className="flex space-x-4 mb-4">
             <button 
               onClick={() => handleCreateRoom()} 
+              className="px-4 py-2 border-2 border-blue-300 text-blue-300 hover:border-blue-400 hover:text-blue-400 rounded transition duration-300 hover:cursor-pointer"
+            >
+              Host Room
+            </button>
+            <input
+              type="text"
+              placeholder="Room ID to Join ..."
+              className="px-4 py-2 border border-gray-300 rounded w-64"
+              value={textField}
+              onChange={(e) => setTextField(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  if (textField.trim() === "") {
+                    setStatus("Please enter a valid Room ID.");
+                  } else {
+                    handleJoinRoom(textField);
+                  }
+                }
+              }}
+            />
+            <button 
+              onClick={() => {
+                if (textField.trim() === "") {
+                  setStatus("Please enter a valid Room ID.");
+                } else {
+                  handleJoinRoom(textField);
+                }
+              }} 
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 hover:cursor-pointer"
             >
-              Create Room
-            </button>
-            <button 
-              onClick={() => socket.emit("get-rooms")} 
-              className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300 hover:cursor-pointer"
-            >
-              Refresh
+              Join
             </button>
           </div>
-          <div className="flex flex-col mt-4 items-center">
-            <div className="text-xl font-semibold mb-5 text-center">Available Rooms:</div>
-            <div className="flex flex-wrap w-full justify-between px-50">
-              {roomIds.map((id) => (
-                <div key={id} className="mb-1">
-                  <button 
-                    onClick={() => handleJoinRoom(id)} 
-                    className="hover:cursor-pointer hover:bg-gray-900 transition duration-300 border py-5 px-3 rounded-lg min-w-[400px]"
-                  >
-                    {id}
-                  </button>
-                </div>
-              ))}
-            </div> 
-        </div>
+          
+          {status !== "Waiting for player to join..." ? (
+            <div className="flex flex-col mt-4 items-center text-white">
+              <div className="space-x-4 flex flex-row mb-5 items-center">
+                <div className="text-xl font-semibold text-center">{`Available Rooms (${roomIds.length})`}</div>
+                <IoMdRefresh
+                  onClick={() => socket.emit("get-rooms")} 
+                  className="text-white text-2xl hover:scale-110 hover:cursor-pointer transition duration-300"
+                />
+              </div>
+              <div className="flex flex-wrap w-full justify-around px-50">
+                {roomIds.map((id) => (
+                  <div key={id}>
+                    <button 
+                      onClick={() => handleJoinRoom(id)} 
+                      className="hover:cursor-pointer hover:bg-gray-900 transition duration-300 border py-4 px-7 m-2 rounded-lg min-w-[150px]"
+                    >
+                      <div className="flex items-center justify-center font-semibold text-lg">
+                        <FaDotCircle className="mr-auto text-green-400" />
+                        {id}
+                      </div>
+                    </button>
+                  </div>
+                ))}
+              </div> 
+            </div>
+          ) : (
+            <div
+              className="flex flex-col items-center mt-4 hover:cursor-pointer text-white"
+              onClick={handleCopy}
+              title="Click to copy"
+            >
+              <div>Your Room ID</div>
+              <div className="font-mono text-3xl">{roomId}</div>
+              {copied && <span className="text-green-400 text-md mt-2">Copied to Clipboard!</span>}
+            </div>
+          )}
         </div>
       </main>
     );
   }
 
   return (
-    <main className="flex justify-center font-sans min-h-screen w-screen">
+    <main className="bg-black flex justify-center font-sans min-h-screen w-screen">
       {winner && (
         <Modal 
           title={winner === playerColor ? '🎉 You Win!' : 'You Lose!'}

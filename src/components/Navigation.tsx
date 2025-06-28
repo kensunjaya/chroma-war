@@ -6,7 +6,7 @@ interface NavigationProps {
 }
 export const Navigation = ({ currentPage }: NavigationProps) => {
   return (
-    <div className="flex flex-col pt-5">
+    <div className="flex flex-col pt-5 text-white">
       <div className="flex flex-row text-3xl xs:text-3xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-4xl text-center justify-between items-center">
         <FaLinkedin className="hover:cursor-pointer" onClick={() => window.open("https://www.linkedin.com/in/kenneth-sunjaya/", "_blank")} />
         <h1 className="text-center hover:cursor-default font-bold">{"Chroma War"}</h1>
