@@ -438,7 +438,8 @@ export default function Home() {
           <div className="flex space-x-4 mb-4">
             <button 
               onClick={() => handleCreateRoom()} 
-              className="px-3 py-2 md:px-4 border-2 border-blue-300 text-blue-300 hover:border-blue-400 hover:text-blue-400 rounded transition duration-300 hover:cursor-pointer"
+              disabled={roomId !== ""}
+              className="px-3 py-2 md:px-4 border-2 border-blue-300 text-blue-300 hover:border-blue-400 hover:text-blue-400 rounded transition duration-300 hover:cursor-pointer disabled:border-gray-500 disabled:text-gray-500 disabled:hover:border-gray-500 disabled:hover:text-gray-500"
             >
               Host Room
             </button>
