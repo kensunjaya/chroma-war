@@ -121,6 +121,15 @@ export default function Home() {
       socket.emit("animation-started", roomId);
       if (burstSeq.length === 1 && burstSeq[0].length === 0) {
         setCells(grid);
+      } 
+      else {
+        const row = burstSeq[0][0].row;
+        const col = burstSeq[0][0].col;
+        setCells((prev) => {
+          const newCells = [...prev];
+          newCells[row][col].val = 4;
+          return newCells;
+        });
       }
       burstSeqHandler(burstSeq, grid, 750, turn - 1).then(() => {
         setTurn(turn);
