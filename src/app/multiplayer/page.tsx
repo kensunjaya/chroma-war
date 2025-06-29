@@ -131,13 +131,13 @@ export default function Home() {
           return newCells;
         });
       }
-      burstSeqHandler(burstSeq, grid, 750, turn - 1).then(() => {
+      burstSeqHandler(burstSeq, grid, 600, turn - 1).then(() => {
         setTurn(turn);
+        socket.emit("done-processing", roomId);
         setTimeout(() => {
-          socket.emit("done-processing", roomId);
           setIsProcessing(false);
           setWinner(winner);
-        }, 750);
+        }, 600);
       });
 
     });
@@ -179,14 +179,15 @@ export default function Home() {
 
   const handleClick = async (row: number, col: number) => {
     if (isProcessing) return; // Prevent user action while processing
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
-    }
+
     const color: Color = turn % 2 === 0 ? 'blue-400' : 'red-400';
     if (color !== playerColor) return;
     const cell = cells[row][col];
     if (cell.color === 'white' && turn > 1) return;
     if (cell.color !== 'white' && cell.color !== color) return;
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
     setIsProcessing(true);
     if (cells[row][col].val === 3) {
       setCells((prev) => {
