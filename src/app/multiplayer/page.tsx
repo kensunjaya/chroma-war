@@ -224,7 +224,7 @@ export default function Home() {
   const burstSeqHandler = async (
     bursts: { row: number; col: number }[][],
     gridAfterBurst: Cell[][],
-    delayMs: number = 750,
+    delayMs: number = 600,
     turn: number
   ): Promise<void> => {
     

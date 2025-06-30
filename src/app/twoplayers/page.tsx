@@ -100,7 +100,7 @@ export default function Home() {
     if (cell.color !== 'white' && cell.color !== color) return;
     setIsProcessing(true); // start processing
     setTurn((prev) => prev + 1);
-    await recursiveFill(row, col, color, 750, true); // use the originally calculated `color`
+    await recursiveFill(row, col, color, 600, true);
     setIsProcessing(false);
   };
 
