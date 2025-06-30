@@ -1,6 +1,6 @@
 # Chroma-War
 
-_Unleash the Power of Strategiy, Dominate Every Chain Reaction_
+_Unleash the Power of Strategy, Dominate Every Chain Reaction_
 
 ![last-commit](https://img.shields.io/github/last-commit/kensunjaya/chroma-war?style=flat&logo=git&logoColor=white&color=0080ff)
 ![repo-top-language](https://img.shields.io/github/languages/top/kensunjaya/chroma-war?style=flat&color=0080ff)
