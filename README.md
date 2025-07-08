@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Chroma-War
+
+_Unleash the Power of Strategy, Dominate Every Chain Reaction_
+
+![last-commit](https://img.shields.io/github/last-commit/kensunjaya/chroma-war?style=flat&logo=git&logoColor=white&color=0080ff)
+![repo-top-language](https://img.shields.io/github/languages/top/kensunjaya/chroma-war?style=flat&color=0080ff)
+![repo-language-count](https://img.shields.io/github/languages/count/kensunjaya/chroma-war?style=flat&color=0080ff)
+
+_Built with the tools and technologies:_
+
+![JSON](https://img.shields.io/badge/JSON-000000.svg?style=flat&logo=JSON&logoColor=white)
+![Markdown](https://img.shields.io/badge/Markdown-000000.svg?style=flat&logo=Markdown&logoColor=white)
+![npm](https://img.shields.io/badge/npm-CB3837.svg?style=flat&logo=npm&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB.svg?style=flat&logo=React&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6.svg?style=flat&logo=TypeScript&logoColor=white)
+![ESLint](https://img.shields.io/badge/ESLint-4B32C3.svg?style=flat&logo=ESLint&logoColor=white)
+![Socket](https://img.shields.io/badge/Socket-C93CD7.svg?style=flat&logo=Socket&logoColor=white)
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Usage](#usage)
+
+---
+
+## Overview
+
+**Chroma War** is a modern web application built with **Next.js**, delivering an interactive, multiplayer grid-based game experience enhanced by AI and real-time communication. It showcases a scalable architecture with seamless deployment options and a rich feature set.
+
+This project enganges developers to create interactive, real-time multiplayer games with AI-driven features. The core benefits include:
+
+- 🧩 **Real-Time Multiplayer**: Leverages WebSocket for instant game updates and synchronized gameplay.
+- 🎮 **AI Integration**: Uses Gemini 2.0 Flash to generate strategic moves, adding depth to gameplay.
+- 🛠️ **Modular Architecture**: Built with TypeScript, ESLint, and Next.js for maintainability and scalability.
+- 🌟 **Rich UI Components**: Includes reusable components like modals and navigation for a cohesive user experience.
+- 🚀 **Easy Deployment**: Optimized setup with Vercel integration for rapid deployment and scaling.
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This project requires the following dependencies:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Programming Language**: TypeScript
+- **Package Manager**: npm
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Build Chroma War from source and install dependencies:
 
-## Learn More
+1. **Clone the repository:**
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   git clone https://github.com/kensunjaya/chroma-war.git
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Navigate to the project directory:**
+   
+   ```bash
+   cd chroma-war
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Install the dependencies:**
 
-## Deploy on Vercel
+   ```bash
+   npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Usage
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Run the project with:
+   ```bash
+   npm run dev
+   ```
