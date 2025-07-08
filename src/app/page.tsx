@@ -40,16 +40,16 @@ const BurstDot = ({ direction, color, onComplete }: {
 
 // Main Component
 export default function Home() {
-  const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
+  const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
   const [aiModel, setAiModel] = useState<string>('unknown');
   const [displayedTurn, setDisplayedTurn] = useState(0);
   const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
   const [colorCount, setColorCount] = useState<{ [key in Color]: number }>({
-    'white': rowsCount * colsCount,
-    'blue-400': 0,
-    'red-400': 0,
+    'N': rowsCount * colsCount,
+    'B': 0,
+    'R': 0,
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -75,7 +75,6 @@ export default function Home() {
   }, [isProcessing]);
 
   const translateGeminiResponse = (response: string) => {
-    // row,col,modelname
     const match = response.match(/^\s*(\d+),\s*(\d+),\s*([^\s,]+)\s*$/);
     if (winner) return;
     if (match) {
@@ -83,7 +82,7 @@ export default function Home() {
       const col = parseInt(match[2], 10);
       setAiModel(match[3] || 'unknown');
       if (row >= 0 && row < rowsCount && col >= 0 && col < colsCount) {
-        if (cells[row][col].color === 'white' && turn > 1 || cells[row][col].color === 'blue-400') {
+        if (cells[row][col].color === 'N' && turn > 1 || cells[row][col].color === 'B') {
           translateGeminiResponse("Invalid move. Random move will be made.");
         }
         else {
@@ -99,12 +98,12 @@ export default function Home() {
       console.log(response);
       const randomRow = Math.floor(Math.random() * rowsCount);
       const randomCol = Math.floor(Math.random() * colsCount);
-      if (cells[randomRow][randomCol].color === 'red-400') {
+      if (cells[randomRow][randomCol].color === 'R') {
         handleClick(randomRow, randomCol);
       }
       else {
         // first move
-        if (cells[randomRow][randomCol].color === 'white' && turn < 2) {
+        if (cells[randomRow][randomCol].color === 'N' && turn < 2) {
           handleClick(randomRow, randomCol);
         }
         else {
@@ -118,22 +117,22 @@ export default function Home() {
     if (turn < 2) {
       return false;
     }
-    if (colorCount['blue-400'] === 0) {
-      setWinner('red-400');
+    if (colorCount['B'] === 0) {
+      setWinner('R');
       return true;
     }
-    else if (colorCount['red-400'] === 0) {
-      setWinner('blue-400');
+    else if (colorCount['R'] === 0) {
+      setWinner('B');
       return true;
     }
   }
 
   const resetGame = () => {
-    setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
+    setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
     setTurn(0);
-    colorCount['blue-400'] = 0;
-    colorCount['red-400'] = 0;
-    colorCount['white'] = rowsCount * colsCount;
+    colorCount['B'] = 0;
+    colorCount['R'] = 0;
+    colorCount['N'] = rowsCount * colsCount;
     setColorCount({ ...colorCount });
     setDisplayedTurn(0);
     setIsProcessing(false);
@@ -149,18 +148,18 @@ export default function Home() {
     if (navigator.vibrate) {
       navigator.vibrate(50);
     }
-    const color: Color = turn % 2 === 0 ? 'blue-400' : 'red-400';
+    const color: Color = turn % 2 === 0 ? 'B' : 'R';
     const cell = cells[row][col];
 
-    if (cell.color === 'white' && turn > 1) return;
-    if (cell.color !== 'white' && cell.color !== color) return;
+    if (cell.color === 'N' && turn > 1) return;
+    if (cell.color !== 'N' && cell.color !== color) return;
     setIsProcessing(true); // start processing
     setTurn((prev) => prev + 1);
     await recursiveFill(row, col, color, 600, true);
     setIsProcessing(false);
   };
 
-  const addBurst = (row: number, col: number, directions: Direction[], color: Exclude<Color, 'white'>) => {
+  const addBurst = (row: number, col: number, directions: Direction[], color: Exclude<Color, 'N'>) => {
     directions.forEach((dir) => {
       setBurstDots((prev) => [
         ...prev,
@@ -186,7 +185,7 @@ export default function Home() {
       newCells[row][col].val = 3;
     }
 
-    if (newCells[row][col].color === 'white') {
+    if (newCells[row][col].color === 'N') {
       colorCount[color] += 1;
     }
     else if (newCells[row][col].color !== color) {
@@ -206,38 +205,38 @@ export default function Home() {
       newCells[row][col].val = 0;
       colorCount[newCells[row][col].color] -= 1;
       setColorCount({ ...colorCount });
-      newCells[row][col].color = 'white';
+      newCells[row][col].color = 'N';
       if (navigator.vibrate) {
         navigator.vibrate(50);
       }
 
       // draw burst animation
       if (row === 0 && col === 0) {
-        addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'white'>);
+        addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'N'>);
       }
       else if (row === 0 && col === colsCount - 1) {
-        addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'white'>);
+        addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'N'>);
       }
       else if (row === rowsCount - 1 && col === 0) {
-        addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'white'>);
+        addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'N'>);
       }
       else if (row === rowsCount - 1 && col === colsCount - 1) {
-        addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'white'>);
+        addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'N'>);
       }
       else if (row === 0) {
-        addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'white'>);
+        addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'N'>);
       }
       else if (row === rowsCount - 1) {
-        addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'white'>);
+        addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'N'>);
       }
       else if (col === 0) {
-        addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'white'>);
+        addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'N'>);
       }
       else if (col === colsCount - 1) {
-        addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'white'>);
+        addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'N'>);
       }
       else {
-        addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'white'>);
+        addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'N'>);
       }
 
       const promises = [];
@@ -259,30 +258,30 @@ export default function Home() {
   };
 
   return (
-    <main className="flex justify-center font-sans min-h-screen w-screen">
+    <main className="flex justify-center min-h-screen w-screen font-primary bg-secondary text-primary">
       {winner && (
         <Modal 
-          title={winner === 'blue-400' ? 'Blue Wins!' : 'Red Wins!'}
+          title={winner === 'B' ? 'Blue Wins!' : 'Red Wins!'}
           body={"Press the button below to play again."}
           buttonLabel="Play Again"
           isLoading={false}
           setState={() => resetGame()}
         />
       )}
-      <div className={`z-10 bg-black ${winner && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'}`}>
+      <div className={`z-1 transition duration-300 ease-in-out`}>
         <Navigation currentPage='ai' />
-        <div className="flex flex-col items-center py-3 sm:py-4 font-sans">
+        <div className="flex flex-col items-center py-3 sm:py-4 font-primary">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
                 onClick={() => handleClick(rowIndex, colIndex, true)}
                 key={rowIndex * rowsCount + colIndex}
-                className={`p-1 md:p-2 cursor-pointer rounded-xl bg-white justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
+                className={`p-1 md:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
               >
                 <div
                   className={`relative flex justify-center items-center w-full h-full`}
                 >
-                  <div className={`transition-all duration-200 absolute inset-0 rounded-full ${cell.color === 'blue-400' ? 'bg-blue-400' : cell.color === 'red-400' ? 'bg-red-400' : 'bg-white'}`} />
+                  <div className={`transition-all duration-200 absolute inset-0 rounded-full ${cell.color === 'B' ? 'bg-blue-500' : cell.color === 'R' ? 'bg-red-500' : 'bg-primary'}`} />
                   {cell.val !== 0 && Dots(cell.val)}
                   {burstDots
                     .filter((b) => b.row === rowIndex && b.col === colIndex)
@@ -304,8 +303,8 @@ export default function Home() {
           </div>
         </div>
         <div>
-          <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg font-semibold mt-4`}>
-            {displayedTurn % 2 === 0 ? 'Blue\'s turn' : `Red\'s turn${aiModel === 'unknown' ? '' : ` (${aiModel})`}`}
+          <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
+            {displayedTurn % 2 === 0 ? 'BLUE\'s TURN' : `RED\'s TURN${aiModel === 'unknown' ? '' : ` (${aiModel.replace('gemini-', '')})`}`}
           </p>
         </div>
       </div>

@@ -1,5 +1,5 @@
 export const Dots = (val: number) => {
-  const dotClass = `w-2 h-2 sm:h-3.5 sm:w-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5 rounded-full bg-white`;
+  const dotClass = `w-2 h-2 sm:h-3.5 sm:w-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5 rounded-full bg-primary`;
   const dotWrapper = 'absolute w-full h-full flex items-center justify-center';
   const dots = {
     1: [<div key="1" className={dotWrapper}><div className={dotClass} /></div>],

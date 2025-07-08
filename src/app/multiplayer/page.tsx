@@ -41,10 +41,10 @@ const BurstDot = ({ direction, color, onComplete }: {
 
 // Main Component
 export default function Home() {
-  const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
+  const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
   const [turn, setTurn] = useState(0);
   const [isAllPlayersReady, setIsAllPlayersReady] = useState(false);
-  const [playerColor, setPlayerColor] = useState<Color>('white');
+  const [playerColor, setPlayerColor] = useState<Color>('N');
   const [playerName, setPlayerName] = useState<string | null>("Chroma Player");
   const [tempName, setTempName] = useState<string>("");
   const [textField, setTextField] = useState<string>("");
@@ -98,16 +98,16 @@ export default function Home() {
       const playerIndex = socket.id ? room.players.indexOf(socket.id) : -1;
       console.log("Player index:", playerIndex);
       if (playerIndex % 2 === 0) {
-        setPlayerColor('blue-400');
+        setPlayerColor('B');
       }
       else {
-        setPlayerColor('red-400');
+        setPlayerColor('R');
       }
       setStatus("Player joined the room!");
       if (room.players.length >= 2) {
         setIsAllPlayersReady(true);
         setStatus("Both players are ready! Game starting...");
-        setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'white' }))));
+        setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
       }
     });
 
@@ -180,11 +180,11 @@ export default function Home() {
   const handleClick = async (row: number, col: number) => {
     if (isProcessing) return; // Prevent user action while processing
 
-    const color: Color = turn % 2 === 0 ? 'blue-400' : 'red-400';
+    const color: Color = turn % 2 === 0 ? 'B' : 'R';
     if (color !== playerColor) return;
     const cell = cells[row][col];
-    if (cell.color === 'white' && turn > 1) return;
-    if (cell.color !== 'white' && cell.color !== color) return;
+    if (cell.color === 'N' && turn > 1) return;
+    if (cell.color !== 'N' && cell.color !== color) return;
     if (navigator.vibrate) {
       navigator.vibrate(50);
     }
@@ -204,7 +204,7 @@ export default function Home() {
     });
   };
 
-  const addBurst = (row: number, col: number, directions: Direction[], color: Exclude<Color, 'white'>) => {
+  const addBurst = (row: number, col: number, directions: Direction[], color: Exclude<Color, 'N'>) => {
     directions.forEach((dir) => {
       setBurstDots((prev) => [
         ...prev,
@@ -228,7 +228,7 @@ export default function Home() {
     turn: number
   ): Promise<void> => {
     
-    const color = turn % 2 === 0 ? 'blue-400' : 'red-400';
+    const color = turn % 2 === 0 ? 'B' : 'R';
     for (const seqs of bursts) {
       if (!Array.isArray(seqs)) continue;
       await sleep(delayMs);
@@ -238,35 +238,35 @@ export default function Home() {
         if (navigator.vibrate) navigator.vibrate(30);
           
           tempCells[row][col].val = 0;
-          tempCells[row][col].color = 'white';
+          tempCells[row][col].color = 'N';
           
           if (row === 0 && col === 0) {
             tempCells[row+1][col].val += 1;
             tempCells[row+1][col].color = color;
             tempCells[row][col+1].val += 1;
             tempCells[row][col+1].color = color;
-            addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'white'>);
+            addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'N'>);
           }
           else if (row === 0 && col === colsCount - 1) {
             tempCells[row+1][col].val += 1;
             tempCells[row+1][col].color = color;
             tempCells[row][col-1].val += 1;
             tempCells[row][col-1].color = color;
-            addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'white'>);
+            addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'N'>);
           }
           else if (row === rowsCount - 1 && col === 0) {
             tempCells[row-1][col].val += 1;
             tempCells[row-1][col].color = color;
             tempCells[row][col+1].val += 1;
             tempCells[row][col+1].color = color;
-            addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'white'>);
+            addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'N'>);
           }
           else if (row === rowsCount - 1 && col === colsCount - 1) {
             tempCells[row-1][col].val += 1;
             tempCells[row-1][col].color = color;
             tempCells[row][col-1].val += 1;
             tempCells[row][col-1].color = color;
-            addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'white'>);
+            addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'N'>);
           }
           else if (row === 0) {
             tempCells[row+1][col].val += 1;
@@ -275,7 +275,7 @@ export default function Home() {
             tempCells[row][col-1].color = color;
             tempCells[row][col+1].val += 1;
             tempCells[row][col+1].color = color;
-            addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'white'>);
+            addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'N'>);
           }
           else if (row === rowsCount - 1) {
             tempCells[row-1][col].val += 1;
@@ -284,7 +284,7 @@ export default function Home() {
             tempCells[row][col-1].color = color;
             tempCells[row][col+1].val += 1;
             tempCells[row][col+1].color = color;
-            addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'white'>);
+            addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'N'>);
           }
           else if (col === 0) {
             tempCells[row-1][col].val += 1;
@@ -293,7 +293,7 @@ export default function Home() {
             tempCells[row+1][col].color = color;
             tempCells[row][col+1].val += 1;
             tempCells[row][col+1].color = color;
-            addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'white'>);
+            addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'N'>);
           }
           else if (col === colsCount - 1) {
             tempCells[row-1][col].val += 1;
@@ -302,7 +302,7 @@ export default function Home() {
             tempCells[row+1][col].color = color;
             tempCells[row][col-1].val += 1;
             tempCells[row][col-1].color = color;
-            addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'white'>);
+            addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'N'>);
           }
           else {
             tempCells[row-1][col].val += 1;
@@ -313,7 +313,7 @@ export default function Home() {
             tempCells[row][col-1].color = color;
             tempCells[row][col+1].val += 1;
             tempCells[row][col+1].color = color;
-            addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'white'>);
+            addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'N'>);
           }
         }
          return tempCells;
@@ -324,87 +324,6 @@ export default function Home() {
     setCells(gridAfterBurst);
   };
 
-
-  // const recursiveFill = async (row: number, col: number, color: Color, delayMs: number, isUserAction: boolean = false): Promise<void> => {
-  //   const newCells = [...cells];
-  //   if (turn > 1) {
-  //     newCells[row][col].val += 1;
-  //   }
-  //   else {
-  //     newCells[row][col].val = 3;
-  //   }
-
-  //   if (newCells[row][col].color === 'white') {
-  //     colorCount[color] += 1;
-  //   }
-  //   else if (newCells[row][col].color !== color) {
-  //     colorCount[newCells[row][col].color] -= 1;
-  //     colorCount[color] += 1;
-  //   }
-  //   setColorCount({ ...colorCount });
-
-  //   newCells[row][col].color = color;
-  //   if (isUserAction) {
-  //     setCells([...newCells]);
-  //   }
-
-  //   await sleep(delayMs);
-  //   setCells([...newCells]);
-  //   if (newCells[row][col].val >= 4) {
-  //     newCells[row][col].val = 0;
-  //     colorCount[newCells[row][col].color] -= 1;
-  //     setColorCount({ ...colorCount });
-  //     newCells[row][col].color = 'white';
-  //     if (navigator.vibrate) {
-  //       navigator.vibrate(50);
-  //     }
-
-  //     // draw burst animation
-  //     if (row === 0 && col === 0) {
-  //       addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'white'>);
-  //     }
-  //     else if (row === 0 && col === colsCount - 1) {
-  //       addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'white'>);
-  //     }
-  //     else if (row === rowsCount - 1 && col === 0) {
-  //       addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'white'>);
-  //     }
-  //     else if (row === rowsCount - 1 && col === colsCount - 1) {
-  //       addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'white'>);
-  //     }
-  //     else if (row === 0) {
-  //       addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'white'>);
-  //     }
-  //     else if (row === rowsCount - 1) {
-  //       addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'white'>);
-  //     }
-  //     else if (col === 0) {
-  //       addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'white'>);
-  //     }
-  //     else if (col === colsCount - 1) {
-  //       addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'white'>);
-  //     }
-  //     else {
-  //       addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'white'>);
-  //     }
-
-  //     const promises = [];
-
-  //     if (row > 0) {
-  //       promises.push(recursiveFill(row - 1, col, color, delayMs));
-  //     }
-  //     if (row < rowsCount - 1) {
-  //       promises.push(recursiveFill(row + 1, col, color, delayMs));
-  //     } 
-  //     if (col > 0) {
-  //       promises.push(recursiveFill(row, col - 1, color, delayMs));
-  //     }
-  //     if (col < colsCount - 1) {
-  //       promises.push(recursiveFill(row, col + 1, color, delayMs));
-  //     }
-  //     await Promise.all(promises); // wait for all bursts to finish
-  //   }
-  // };
 
   const handleJoinRoom = (roomId: string) => {
     interface JoinRoomResponse {
@@ -427,7 +346,7 @@ export default function Home() {
 
   if (!isAllPlayersReady) {
     return (
-      <main className="flex justify-center bg-black font-sans w-screen min-h-screen">
+      <main className="flex justify-center bg-secondary text-primary font-primary w-screen min-h-screen">
         {!playerName && (
           <Modal 
             title={"Fill username"}
@@ -441,22 +360,22 @@ export default function Home() {
             setState={savePlayerName}
           />
         )}
-        <div className={`flex flex-col z-10 bg-black ${!playerName && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'} items-center`}>
+        <div className={`flex flex-col z-10 bg-secondary ${!playerName && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'} items-center`}>
           <Navigation currentPage='multiplayer' />
           
-          <h1 className="text-xl font-semibold mb-4">{status}</h1>
+          <h1 className="text-xl font-medium mb-4">{status}</h1>
           <div className="flex space-x-4 mb-4">
             <button 
               onClick={() => handleCreateRoom()} 
               disabled={roomId !== ""}
-              className="px-3 py-2 md:px-4 border-2 border-blue-300 text-blue-300 hover:border-blue-400 hover:text-blue-400 rounded transition duration-300 hover:cursor-pointer disabled:border-gray-500 disabled:text-gray-500 disabled:hover:border-gray-500 disabled:hover:text-gray-500"
+              className="px-3 py-2 md:px-4 border-2 border-fourth text-fourth hover:opacity-75 rounded transition duration-300 hover:cursor-pointer disabled:border-gray-500 disabled:text-gray-500 disabled:hover:opacity-100"
             >
               Host Room
             </button>
             <input
               type="text"
               placeholder="Room ID ..."
-              className="px-2 py-2 md:px-4 border border-gray-300 rounded w-32 md:w-48"
+              className="px-2 py-2 md:px-4 border border-primary text-primary rounded w-32 md:w-48"
               value={textField}
               onChange={(e) => setTextField(e.target.value)}
               onKeyDown={(e) => {
@@ -477,19 +396,19 @@ export default function Home() {
                   handleJoinRoom(textField);
                 }
               }} 
-              className="px-3 py-2 md:px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 hover:cursor-pointer"
+              className="px-3 py-2 md:px-4 bg-fourth text-white rounded hover:bg-fourth hover:opacity-75 transition duration-300 hover:cursor-pointer"
             >
               Join
             </button>
           </div>
           
           {status !== "Waiting for player to join..." ? (
-            <div className="flex flex-col mt-4 items-center text-white">
+            <div className="flex flex-col mt-4 items-center text-primary">
               <div className="space-x-4 flex flex-row mb-5 items-center">
                 <div className="text-xl font-semibold text-center">{`Available Rooms (${roomIds.length})`}</div>
                 <IoMdRefresh
                   onClick={() => socket.emit("get-rooms")} 
-                  className="text-white text-2xl hover:scale-110 hover:cursor-pointer transition duration-300"
+                  className="text-primary text-2xl hover:scale-110 hover:cursor-pointer transition duration-300"
                 />
               </div>
               <div className="flex flex-wrap w-full justify-around px-50">
@@ -510,7 +429,7 @@ export default function Home() {
             </div>
           ) : (
             <div
-              className="flex flex-col items-center mt-4 hover:cursor-pointer text-white"
+              className="flex flex-col items-center mt-4 hover:cursor-pointer text-primary"
               onClick={handleCopy}
               title="Click to copy"
             >
@@ -525,7 +444,7 @@ export default function Home() {
   }
 
   return (
-    <main className="bg-black flex justify-center font-sans min-h-screen w-screen">
+    <main className="bg-secondary flex justify-center font-primary min-h-screen w-screen">
       {winner && (
         <Modal 
           title={winner === playerColor ? '🎉 You Win!' : 'You Lose!'}
@@ -535,27 +454,27 @@ export default function Home() {
           setState={() => resetGame()}
         />
       )}
-      <div className={`z-10 bg-black ${winner && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'}`}>
+      <div className={`z-10 transition duration-300 ease-in-out`}>
         <Navigation currentPage='multiplayer' />
         <div>
-          { playerColor !== 'white' && (
-            <p className={`text-center ${playerColor === 'blue-400' ? 'text-blue-400' : 'text-red-400'} text-lg font-semibold mt-4`}>
-              {`You are playing as ${playerColor === 'blue-400' ? 'Blue' : 'Red'}`}
+          { playerColor !== 'N' && (
+            <p className={`text-center ${playerColor === 'B' ? 'text-blue-400' : 'text-red-400'} text-lg font-semibold mt-4`}>
+              {`You are playing as ${playerColor === 'B' ? 'Blue' : 'Red'}`}
             </p>
           )}
         </div>
-        <div className="flex flex-col items-center py-3 sm:py-4 font-sans">
+        <div className="flex flex-col items-center py-3 sm:py-4 font-primary">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
                 onClick={() => handleClick(rowIndex, colIndex)}
                 key={rowIndex * rowsCount + colIndex}
-                className={`p-1 md:p-2 cursor-pointer rounded-xl bg-white justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
+                className={`p-1 md:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
               >
                 <div
                   className={`relative flex justify-center items-center w-full h-full`}
                 >
-                  <div className={`transition-all duration-200 absolute inset-0 rounded-full ${cell.color === 'blue-400' ? 'bg-blue-400' : cell.color === 'red-400' ? 'bg-red-400' : 'bg-white'}`} />
+                  <div className={`transition-all duration-200 absolute inset-0 rounded-full ${cell.color === 'B' ? 'bg-blue-500' : cell.color === 'R' ? 'bg-red-500' : 'bg-primary'}`} />
                   {cell.val !== 0 && Dots(cell.val)}
                   {burstDots
                     .filter((b) => b.row === rowIndex && b.col === colIndex)
@@ -577,8 +496,8 @@ export default function Home() {
           </div>
         </div>
         <div>
-          <p className={`text-center ${turn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg font-semibold mt-4`}>
-            {turn % 2 === 0 ? 'Blue\'s turn' : `Red\'s turn`}
+          <p className={`text-center ${turn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
+            {turn % 2 === 0 ? 'BLUE\'s Turn' : `RED\'s Turn`}
           </p>
         </div>
       </div>
