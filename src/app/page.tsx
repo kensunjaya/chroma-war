@@ -304,7 +304,7 @@ export default function Home() {
         </div>
         <div>
           <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
-            {displayedTurn % 2 === 0 ? 'BLUE\'s TURN' : `RED\'s TURN${aiModel === 'unknown' ? '' : ` (${aiModel.replace('gemini-', '')})`}`}
+            {displayedTurn % 2 === 0 ? 'BLUE\'s Turn' : `RED\'s Turn${aiModel === 'unknown' ? '' : ` (${aiModel.replace('gemini-', '')})`}`}
           </p>
         </div>
       </div>
