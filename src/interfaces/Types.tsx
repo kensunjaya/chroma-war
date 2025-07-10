@@ -17,3 +17,11 @@ export type Room = {
   turn: number;
   createdAt: Date;
 }
+
+export const ColorMap = {
+  'B': 'blue-500',
+  'R': 'red-500',
+  'N': 'white',
+}
+
+export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';

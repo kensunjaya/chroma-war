@@ -28,7 +28,7 @@ const Modal: React.FC<ModalProps> = ({title, body, buttonLabel, isLoading, input
   }
 
   return (
-    <div className="fixed inset-0 backdrop-opacity-80 backdrop-blur-lg backdrop-brightness-40 font-primary overflow-y-auto h-full w-full flex items-center justify-center z-100 transition duration-300 ease-in-out">
+    <div className="fixed inset-0 backdrop-opacity-80 backdrop-blur-lg backdrop-brightness-40 font-primary overflow-y-auto h-full w-full flex items-center justify-center z-999 transition duration-300 ease-in-out">
       <div className="p-8 w-96 shadow shadow-5xl rounded-md bg-primary">
         <div className="text-center">
           <h3 className="text-2xl font-bold text-secondary">{title}</h3>

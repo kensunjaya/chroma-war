@@ -1,45 +1,19 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
 import { Dots } from '../components/Dots';
 import { sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
 import { promptToGemini } from '@/utils/GeminiBot';
 import { Navigation } from '@/components/Navigation';
+import { BurstDot } from '@/utils/Animation';
+import { useTailwindBreakpoint } from './hooks/Breakpoint';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
 
-// BurstDot component
-const BurstDot = ({ direction, color, onComplete }: {
-  direction: Direction;
-  color: Color;
-  onComplete: () => void;
-}) => {
-  const displacement: number = 50;
-  const getCoords = (dir: Direction) => {
-    switch (dir) {
-      case 'up': return { x: 0, y: -displacement };
-      case 'down': return { x: 0, y: displacement };
-      case 'left': return { x: -displacement, y: 0 };
-      case 'right': return { x: displacement, y: 0 };
-    }
-  };
-
-  return (
-    <motion.div
-      initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-      animate={{ ...getCoords(direction), opacity: 0.5, scale: 3 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      onAnimationComplete={onComplete}
-      className={`absolute w-3 h-3 rounded-full bg-${color} pointer-events-none`}
-    />
-  );
-};
-
 // Main Component
-export default function Home() {
+export default function VersusAI() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
@@ -53,6 +27,7 @@ export default function Home() {
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const breakpoint = useTailwindBreakpoint();
 
   useEffect(() => {
     if (isProcessing) return;
@@ -145,14 +120,15 @@ export default function Home() {
       return; // Prevent user action if it's not their turn
     }
     if (isProcessing) return; // Prevent user action while processing
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
-    }
+
     const color: Color = turn % 2 === 0 ? 'B' : 'R';
     const cell = cells[row][col];
 
     if (cell.color === 'N' && turn > 1) return;
     if (cell.color !== 'N' && cell.color !== color) return;
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
     setIsProcessing(true); // start processing
     setTurn((prev) => prev + 1);
     await recursiveFill(row, col, color, 600, true);
@@ -258,7 +234,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex justify-center min-h-screen w-screen font-primary bg-secondary text-primary">
+    <main className="flex select-none justify-center min-h-screen w-screen font-primary bg-secondary text-primary">
       {winner && (
         <Modal 
           title={winner === 'B' ? 'Blue Wins!' : 'Red Wins!'}
@@ -293,6 +269,7 @@ export default function Home() {
                         onComplete={() =>
                           setBurstDots((prev) => prev.filter((x) => x.dot.id !== b.dot.id))
                         }
+                        breakpoint={breakpoint}
                       />
                     ))
                   }

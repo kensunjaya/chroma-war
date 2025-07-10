@@ -1,44 +1,18 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
 import { sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
 import { Dots } from '@/components/Dots';
 import { Navigation } from '@/components/Navigation';
+import { BurstDot } from '@/utils/Animation';
+import { useTailwindBreakpoint } from '../hooks/Breakpoint';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
 
-// BurstDot component
-const BurstDot = ({ direction, color, onComplete }: {
-  direction: Direction;
-  color: Color;
-  onComplete: () => void;
-}) => {
-  const displacement: number = 50;
-  const getCoords = (dir: Direction) => {
-    switch (dir) {
-      case 'up': return { x: 0, y: -displacement };
-      case 'down': return { x: 0, y: displacement };
-      case 'left': return { x: -displacement, y: 0 };
-      case 'right': return { x: displacement, y: 0 };
-    }
-  };
-
-  return (
-    <motion.div
-      initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-      animate={{ ...getCoords(direction), opacity: 0.5, scale: 3 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      onAnimationComplete={onComplete}
-      className={`absolute w-3 h-3 rounded-full bg-${color} pointer-events-none`}
-    />
-  );
-};
-
 // Main Component
-export default function Home() {
+export default function PassPlay() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
@@ -51,6 +25,7 @@ export default function Home() {
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const breakpoint = useTailwindBreakpoint();
 
   useEffect(() => {
     if (isProcessing) return;
@@ -90,14 +65,15 @@ export default function Home() {
 
   const handleClick = async (row: number, col: number) => {
     if (isProcessing) return; // Prevent user action while processing
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
-    }
+
     const color: Color = turn % 2 === 0 ? 'B' : 'R';
     const cell = cells[row][col];
 
     if (cell.color === 'N' && turn > 1) return;
     if (cell.color !== 'N' && cell.color !== color) return;
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
     setIsProcessing(true); // start processing
     setTurn((prev) => prev + 1);
     await recursiveFill(row, col, color, 600, true);
@@ -224,7 +200,7 @@ export default function Home() {
                 className={`p-1 md:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
               >
                 <div
-                  className={`relative flex justify-center items-center w-full h-full`}
+                  className={`transition-all duration-300 relative flex justify-center items-center w-full h-full`}
                 >
                   <div className={`transition-all duration-200 absolute inset-0 rounded-full ${cell.color === 'B' ? 'bg-blue-500' : cell.color === 'R' ? 'bg-red-500' : 'bg-primary'}`} />
                   {cell.val !== 0 && Dots(cell.val)}
@@ -238,6 +214,7 @@ export default function Home() {
                         onComplete={() =>
                           setBurstDots((prev) => prev.filter((x) => x.dot.id !== b.dot.id))
                         }
+                        breakpoint={breakpoint}
                       />
                     ))
                   }

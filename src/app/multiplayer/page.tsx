@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { BurstDotStructure, Cell, Color, Direction, Room } from '@/interfaces/Types';
 import { sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
@@ -9,38 +9,14 @@ import { Navigation } from '@/components/Navigation';
 import socket from '@/utils/socket';
 import { IoMdRefresh } from 'react-icons/io';
 import { FaDotCircle } from 'react-icons/fa';
+import { BurstDot } from '@/utils/Animation';
+import { useTailwindBreakpoint } from '../hooks/Breakpoint';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
 
-const BurstDot = ({ direction, color, onComplete }: {
-  direction: Direction;
-  color: Color;
-  onComplete: () => void;
-}) => {
-  const displacement: number = 50;
-  const getCoords = (dir: Direction) => {
-    switch (dir) {
-      case 'up': return { x: 0, y: -displacement };
-      case 'down': return { x: 0, y: displacement };
-      case 'left': return { x: -displacement, y: 0 };
-      case 'right': return { x: displacement, y: 0 };
-    }
-  };
-
-  return (
-    <motion.div
-      initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-      animate={{ ...getCoords(direction), opacity: 0.5, scale: 3 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-      onAnimationComplete={onComplete}
-      className={`absolute w-3 h-3 rounded-full bg-${color} pointer-events-none`}
-    />
-  );
-};
-
 // Main Component
-export default function Home() {
+export default function Multiplayer() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
   const [turn, setTurn] = useState(0);
   const [isAllPlayersReady, setIsAllPlayersReady] = useState(false);
@@ -56,6 +32,7 @@ export default function Home() {
   const [status, setStatus] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const breakpoint = useTailwindBreakpoint();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(roomId);
@@ -486,6 +463,7 @@ export default function Home() {
                         onComplete={() =>
                           setBurstDots((prev) => prev.filter((x) => x.dot.id !== b.dot.id))
                         }
+                        breakpoint={breakpoint}
                       />
                     ))
                   }
