@@ -323,7 +323,7 @@ export default function Multiplayer() {
 
   if (!isAllPlayersReady) {
     return (
-      <main className="flex justify-center bg-secondary text-primary font-primary w-screen min-h-screen">
+      <main className="flex select-none justify-center bg-secondary text-primary font-primary w-screen min-h-screen">
         {!playerName && (
           <Modal 
             title={"Fill username"}
@@ -421,7 +421,7 @@ export default function Multiplayer() {
   }
 
   return (
-    <main className="bg-secondary flex justify-center font-primary min-h-screen w-screen">
+    <main className="bg-secondary flex select-none justify-center font-primary min-h-screen w-screen">
       {winner && (
         <Modal 
           title={winner === playerColor ? '🎉 You Win!' : 'You Lose!'}

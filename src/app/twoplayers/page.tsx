@@ -179,7 +179,7 @@ export default function PassPlay() {
   };
 
   return (
-    <main className="flex justify-center font-primary bg-secondary min-h-screen w-screen">
+    <main className="flex select-none justify-center font-primary bg-secondary min-h-screen w-screen">
       {winner && (
         <Modal 
           title={winner === 'B' ? 'Blue Wins!' : 'Red Wins!'}
