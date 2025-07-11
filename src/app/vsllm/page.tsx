@@ -224,7 +224,7 @@ export default function VersusAI() {
     <main className="flex select-none justify-center min-h-screen w-screen font-primary bg-secondary text-primary">
       {winner && (
         <Modal 
-          title={winner === 'B' ? 'Blue Wins!' : 'Red Wins!'}
+          title={winner === 'B' ? '🎉 You Win!' : 'You Lose!'}
           body={"Press the button below to play again."}
           buttonLabel="Play Again"
           isLoading={false}
@@ -268,7 +268,7 @@ export default function VersusAI() {
         </div>
         <div>
           <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
-            {displayedTurn % 2 === 0 ? 'BLUE\'s Turn' : `RED\'s Turn${aiModel === 'unknown' ? '' : ` (${aiModel.replace('gemini-', '')})`}`}
+            {displayedTurn % 2 === 0 ? 'Your Turn' : `RED\'s Turn${aiModel === 'unknown' ? '' : ` (${aiModel.replace('gemini-', '')})`}`}
           </p>
         </div>
       </div>
