@@ -1,13 +1,13 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
-import { Dots } from '../components/Dots';
+import { Dots } from '../../components/Dots';
 import { checkWinner, sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
 import { promptToGemini } from '@/utils/GeminiBot';
 import { Navigation } from '@/components/Navigation';
 import { BurstDot } from '@/utils/Animation';
-import { useTailwindBreakpoint } from '../hooks/Breakpoint';
+import { useTailwindBreakpoint } from '../../hooks/Breakpoint';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
@@ -232,7 +232,7 @@ export default function VersusAI() {
         />
       )}
       <div className={`z-1 transition duration-300 ease-in-out`}>
-        <Navigation currentPage='ai' />
+        <Navigation currentPage='vsllm' />
         <div className="flex flex-col items-center py-3 sm:py-4 font-primary">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (

@@ -1,7 +1,25 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    return [
+      {
+        source: '/minimax',
+        destination: '/singleplayer',
+        permanent: true,
+      },
+      {
+        source: '/',
+        destination: '/singleplayer',
+        permanent: true,
+      },
+      {
+        source: '/versusai',
+        destination: '/singleplayer',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

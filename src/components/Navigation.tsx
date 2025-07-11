@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 interface NavigationProps {
-  currentPage: 'ai' | 'twoplayers' | 'multiplayer' | 'minimax';
+  currentPage: 'vsllm' | 'minimax' | 'twoplayers' | 'multiplayer';
 }
 export const Navigation = ({ currentPage }: NavigationProps) => {
   return (
@@ -15,8 +15,8 @@ export const Navigation = ({ currentPage }: NavigationProps) => {
       <div className="flex items-center font-primary font-normal text-xs md:text-lg justify-center p-4 w-full">
         <nav className="justify-around lg:space-x-6 flex flex-row items-center">
           <Link
-            href="/"
-            className={`hover:cursor-pointer select-none hover:scale-110 transition px-3 rounded-sm ${currentPage === 'ai' && 'text-fourth'}`}
+            href="/singleplayer"
+            className={`hover:cursor-pointer select-none hover:scale-110 transition px-3 rounded-sm ${currentPage === 'minimax' && 'text-fourth'}`}
           >
             VERSUS AI
           </Link>
@@ -31,12 +31,6 @@ export const Navigation = ({ currentPage }: NavigationProps) => {
             className={`hover:cursor-pointer select-none hover:scale-110 transition px-3 rounded-sm ${currentPage === 'multiplayer' && 'text-fourth'}`}
           >
             MULTIPLAYER
-          </Link>
-          <Link
-            href="/minimax"
-            className={`hover:cursor-pointer select-none hover:scale-110 transition px-3 rounded-sm ${currentPage === 'minimax' && 'text-fourth'}`}
-          >
-            MINIMAX
           </Link>
         </nav>
       </div>
