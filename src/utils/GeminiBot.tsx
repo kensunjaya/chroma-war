@@ -2,7 +2,7 @@
 
 import { Cell } from "@/interfaces/Types";
 import { GoogleGenAI } from "@google/genai";
-import { buildFewShotPrompt, validateFirstMove } from "./FunctionUtils";
+import { buildFewShotPrompt, moveFistTurn } from "./FunctionUtils";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GENAI_KEY });
 
@@ -75,15 +75,4 @@ export async function promptToGemini(cells: Cell[][], isFirstTurn: boolean): Pro
     }
   }
   return "All Gemini models failed or are rate-limited.";
-}
-
-const moveFistTurn = (cells: Cell[][]): string => {
-  const row = Math.floor(Math.random() * 4) + 1;
-  const col = Math.floor(Math.random() * 4) + 1;
-  const isValid = validateFirstMove(cells, row, col);
-  if (isValid) {
-    return `${row},${col},unknown`; // Return unknown model since it's the first turn
-  } else {
-    return moveFistTurn(cells); // Retry if invalid
-  }
 }

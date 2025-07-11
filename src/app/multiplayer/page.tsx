@@ -10,7 +10,7 @@ import socket from '@/utils/socket';
 import { IoMdRefresh } from 'react-icons/io';
 import { FaDotCircle } from 'react-icons/fa';
 import { BurstDot } from '@/utils/Animation';
-import { useTailwindBreakpoint } from '../hooks/Breakpoint';
+import { useTailwindBreakpoint } from '@/hooks/Breakpoint';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;

@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
-import { sleep } from '@/utils/FunctionUtils';
+import { checkWinner, sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
 import { Dots } from '@/components/Dots';
 import { Navigation } from '@/components/Navigation';
 import { BurstDot } from '@/utils/Animation';
-import { useTailwindBreakpoint } from '../hooks/Breakpoint';
+import { useTailwindBreakpoint } from '@/hooks/Breakpoint';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
@@ -29,26 +29,12 @@ export default function PassPlay() {
 
   useEffect(() => {
     if (isProcessing) return;
-    const win = checkWinner();
+    const win = checkWinner(turn, colorCount);
+    setWinner(win);
     if (win) return;
     setDisplayedTurn(turn);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing]);
-
-
-  const checkWinner = () => {
-    if (turn < 2) {
-      return false;
-    }
-    if (colorCount['B'] === 0) {
-      setWinner('R');
-      return true;
-    }
-    else if (colorCount['R'] === 0) {
-      setWinner('B');
-      return true;
-    }
-  }
 
   const resetGame = () => {
     setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));

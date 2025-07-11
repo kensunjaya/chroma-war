@@ -1,23 +1,21 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
-import { Dots } from '../components/Dots';
-import { checkWinner, sleep } from '@/utils/FunctionUtils';
+import { Dots } from '@/components/Dots'; 
+import { checkWinner, findBestMove, sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
-import { promptToGemini } from '@/utils/GeminiBot';
 import { Navigation } from '@/components/Navigation';
 import { BurstDot } from '@/utils/Animation';
-import { useTailwindBreakpoint } from '../hooks/Breakpoint';
+import { useTailwindBreakpoint } from '@/hooks/Breakpoint';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
 
 // Main Component
-export default function VersusAI() {
+export default function MiniMax() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
-  const [aiModel, setAiModel] = useState<string>('unknown');
   const [displayedTurn, setDisplayedTurn] = useState(0);
   const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
   const [colorCount, setColorCount] = useState<{ [key in Color]: number }>({
@@ -36,58 +34,13 @@ export default function VersusAI() {
     if (win) return;
     setDisplayedTurn(turn);
     if (turn % 2 !== 0) {
-      if (turn < 2) {
-        promptToGemini(cells, true).then(response => {
-          translateGeminiResponse(response);
-        });
-      }
-      else {
-        promptToGemini(cells, false).then(response => {
-          translateGeminiResponse(response);
-        });
-      }
+      setTimeout(() => {
+        const { row, col } = findBestMove(cells, 5, turn, colorCount);
+        handleClick(row, col);
+      }, 1);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing]);
-
-  const translateGeminiResponse = (response: string) => {
-    const match = response.match(/^\s*(\d+),\s*(\d+),\s*([^\s,]+)\s*$/);
-    if (winner) return;
-    if (match) {
-      const row = parseInt(match[1], 10);
-      const col = parseInt(match[2], 10);
-      setAiModel(match[3] || 'unknown');
-      if (row >= 0 && row < rowsCount && col >= 0 && col < colsCount) {
-        if (cells[row][col].color === 'N' && turn > 1 || cells[row][col].color === 'B') {
-          translateGeminiResponse("Invalid move. Random move will be made.");
-        }
-        else {
-          handleClick(row, col);
-        }
-      }
-      else {
-        translateGeminiResponse("Invalid coordinates. Random move will be made.");
-      }
-    }
-    else {
-      // random coordinates but red
-      console.log(response);
-      const randomRow = Math.floor(Math.random() * rowsCount);
-      const randomCol = Math.floor(Math.random() * colsCount);
-      if (cells[randomRow][randomCol].color === 'R') {
-        handleClick(randomRow, randomCol);
-      }
-      else {
-        // first move
-        if (cells[randomRow][randomCol].color === 'N' && turn < 2) {
-          handleClick(randomRow, randomCol);
-        }
-        else {
-          translateGeminiResponse(response);
-        }
-      }
-    }
-  }
 
   const resetGame = () => {
     setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
@@ -232,7 +185,7 @@ export default function VersusAI() {
         />
       )}
       <div className={`z-1 transition duration-300 ease-in-out`}>
-        <Navigation currentPage='ai' />
+        <Navigation currentPage='minimax' />
         <div className="flex flex-col items-center py-3 sm:py-4 font-primary">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
@@ -268,7 +221,7 @@ export default function VersusAI() {
         </div>
         <div>
           <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
-            {displayedTurn % 2 === 0 ? 'BLUE\'s Turn' : `RED\'s Turn${aiModel === 'unknown' ? '' : ` (${aiModel.replace('gemini-', '')})`}`}
+            {displayedTurn % 2 === 0 ? 'BLUE\'s Turn' : `RED\'s Turn (MiniMax)`}
           </p>
         </div>
       </div>

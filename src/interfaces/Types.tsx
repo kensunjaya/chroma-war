@@ -25,3 +25,9 @@ export const ColorMap = {
 }
 
 export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+export type MiniMaxOutput = {
+  row: number;
+  col: number;
+  score: number;
+}

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 interface NavigationProps {
-  currentPage: 'ai' | 'twoplayers' | 'multiplayer';
+  currentPage: 'ai' | 'twoplayers' | 'multiplayer' | 'minimax';
 }
 export const Navigation = ({ currentPage }: NavigationProps) => {
   return (
@@ -31,6 +31,12 @@ export const Navigation = ({ currentPage }: NavigationProps) => {
             className={`hover:cursor-pointer select-none hover:scale-110 transition px-3 rounded-sm ${currentPage === 'multiplayer' && 'text-fourth'}`}
           >
             MULTIPLAYER
+          </Link>
+          <Link
+            href="/minimax"
+            className={`hover:cursor-pointer select-none hover:scale-110 transition px-3 rounded-sm ${currentPage === 'minimax' && 'text-fourth'}`}
+          >
+            MINIMAX
           </Link>
         </nav>
       </div>
