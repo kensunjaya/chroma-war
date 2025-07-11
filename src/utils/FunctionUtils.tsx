@@ -124,6 +124,19 @@ export const findBestMove = (cells: Cell[][], depth: number, turn: number, color
     }
   }
 
+  // If no valid moves found, fallback to any first occurence of R cell
+  if (bestMove.row === -1 || bestMove.col === -1) {
+    for (let row = 0; row < cells.length; row++) {
+      for (let col = 0; col < cells[row].length; col++) {
+        const cell = cells[row][col];
+        if (cell.color === 'R') {
+          bestMove = { row, col };
+          break;
+        }
+      }
+    }
+  }
+
   return { row: bestMove.row, col: bestMove.col, score: bestScore };
 }
 
