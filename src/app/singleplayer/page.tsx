@@ -67,7 +67,7 @@ export default function MiniMax() {
     if (cell.color === 'N' && turn > 1) return;
     if (cell.color !== 'N' && cell.color !== color) return;
     if (navigator.vibrate) {
-      navigator.vibrate(50);
+      navigator.vibrate(20);
     }
     setIsProcessing(true); // start processing
     setTurn((prev) => prev + 1);
@@ -123,7 +123,7 @@ export default function MiniMax() {
       setColorCount({ ...colorCount });
       newCells[row][col].color = 'N';
       if (navigator.vibrate) {
-        navigator.vibrate(50);
+        navigator.vibrate(20);
       }
 
       // draw burst animation
@@ -174,7 +174,7 @@ export default function MiniMax() {
   };
 
   return (
-    <main className="flex select-none justify-center min-h-screen w-screen font-primary bg-secondary text-primary">
+    <main className="flex justify-center font-primary text-primary">
       {winner && (
         <Modal 
           title={winner === 'B' ? '🎉 You Win!' : 'You Lose!'}
@@ -192,7 +192,7 @@ export default function MiniMax() {
               <button
                 onClick={() => handleClick(rowIndex, colIndex, true)}
                 key={rowIndex * rowsCount + colIndex}
-                className={`p-1 md:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
+                className={`p-1 md:p-1.5 lg:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
               >
                 <div
                   className={`relative flex justify-center items-center w-full h-full`}
@@ -220,7 +220,7 @@ export default function MiniMax() {
           </div>
         </div>
         <div>
-          <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
+          <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-fourth' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
             {displayedTurn % 2 === 0 ? 'Your Turn' : `RED\'s Turn (MiniMax)`}
           </p>
         </div>

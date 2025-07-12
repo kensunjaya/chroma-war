@@ -163,7 +163,7 @@ export default function Multiplayer() {
     if (cell.color === 'N' && turn > 1) return;
     if (cell.color !== 'N' && cell.color !== color) return;
     if (navigator.vibrate) {
-      navigator.vibrate(50);
+      navigator.vibrate(20);
     }
     setIsProcessing(true);
     if (cells[row][col].val === 3) {
@@ -212,7 +212,7 @@ export default function Multiplayer() {
       setCells((prev) => {
       const tempCells = [...prev];
       for (const { row, col } of seqs) {
-        if (navigator.vibrate) navigator.vibrate(30);
+        if (navigator.vibrate) navigator.vibrate(20);
           
           tempCells[row][col].val = 0;
           tempCells[row][col].color = 'N';
@@ -323,7 +323,7 @@ export default function Multiplayer() {
 
   if (!isAllPlayersReady) {
     return (
-      <main className="flex select-none justify-center bg-secondary text-primary font-primary w-screen min-h-screen">
+      <main className="flex justify-center text-primary font-primary">
         {!playerName && (
           <Modal 
             title={"Fill username"}
@@ -337,9 +337,8 @@ export default function Multiplayer() {
             setState={savePlayerName}
           />
         )}
-        <div className={`flex flex-col z-10 bg-secondary ${!playerName && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'} items-center`}>
+        <div className={`flex flex-col z-10 ${!playerName && 'blur-[0.1rem] opacity-30k transition duration-300 ease-in-out'} items-center`}>
           <Navigation currentPage='multiplayer' />
-          
           <h1 className="text-xl font-medium mb-4">{status}</h1>
           <div className="flex space-x-4 mb-4">
             <button 
@@ -421,7 +420,7 @@ export default function Multiplayer() {
   }
 
   return (
-    <main className="bg-secondary flex select-none justify-center font-primary min-h-screen w-screen">
+    <main className="flex justify-center font-primary">
       {winner && (
         <Modal 
           title={winner === playerColor ? '🎉 You Win!' : 'You Lose!'}
@@ -446,7 +445,7 @@ export default function Multiplayer() {
               <button
                 onClick={() => handleClick(rowIndex, colIndex)}
                 key={rowIndex * rowsCount + colIndex}
-                className={`p-1 md:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
+                className={`p-1 md:p-1.5 lg:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
               >
                 <div
                   className={`relative flex justify-center items-center w-full h-full`}
@@ -474,8 +473,8 @@ export default function Multiplayer() {
           </div>
         </div>
         <div>
-          <p className={`text-center ${turn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
-            {turn % 2 === 0 ? 'BLUE\'s Turn' : `RED\'s Turn`}
+          <p className={`text-center ${turn % 2 === 0 ? (playerColor === 'B' ? 'text-fourth' : 'text-blue-400') : (playerColor === 'R' ? 'text-fourth' : 'text-red-400')} text-lg md:text-xl font-semibold mt-4`}>
+            {turn % 2 === 0 ? (playerColor === 'B' ? 'Your Turn' : 'BLUE\'s Turn') : (playerColor === 'R' ? 'Your Turn' : `RED\'s Turn`)}
           </p>
         </div>
       </div>

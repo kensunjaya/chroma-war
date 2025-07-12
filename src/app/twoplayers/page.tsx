@@ -58,7 +58,7 @@ export default function PassPlay() {
     if (cell.color === 'N' && turn > 1) return;
     if (cell.color !== 'N' && cell.color !== color) return;
     if (navigator.vibrate) {
-      navigator.vibrate(50);
+      navigator.vibrate(20);
     }
     setIsProcessing(true); // start processing
     setTurn((prev) => prev + 1);
@@ -114,7 +114,7 @@ export default function PassPlay() {
       setColorCount({ ...colorCount });
       newCells[row][col].color = 'N';
       if (navigator.vibrate) {
-        navigator.vibrate(50);
+        navigator.vibrate(20);
       }
 
       // draw burst animation
@@ -165,7 +165,7 @@ export default function PassPlay() {
   };
 
   return (
-    <main className="flex select-none justify-center font-primary bg-secondary min-h-screen w-screen">
+    <main className="flex justify-center font-primary">
       {winner && (
         <Modal 
           title={winner === 'B' ? 'Blue Wins!' : 'Red Wins!'}
@@ -183,7 +183,7 @@ export default function PassPlay() {
               <button
                 onClick={() => handleClick(rowIndex, colIndex)}
                 key={rowIndex * rowsCount + colIndex}
-                className={`p-1 md:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
+                className={`p-1 md:p-1.5 lg:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
               >
                 <div
                   className={`transition-all duration-300 relative flex justify-center items-center w-full h-full`}

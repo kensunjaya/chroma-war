@@ -18,7 +18,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.png" type="image/png" />
       </head>
       <body
-        className={`antialiased`}
+        className='antialiased bg-secondary select-none'
       >
         {children}
         <Analytics />
