@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { BurstDotStructure, Cell, Color, Direction, Room } from '@/interfaces/Types';
 import { sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
@@ -25,7 +26,7 @@ export default function Multiplayer() {
   const [tempName, setTempName] = useState<string>("");
   const [textField, setTextField] = useState<string>("");
   const [roomId, setRoomId] = useState<string>("");
-  const [roomIds, setRoomIds] = useState<string[]>([]);
+  const [availableRooms, setAvailableRooms] = useState<Room[]>([]);
   const [winner, setWinner] = useState<Color | null>(null);
   const [isWaitingForPlayer, setIsWaitingForPlayer] = useState(false);
   const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
@@ -46,7 +47,7 @@ export default function Multiplayer() {
   }
 
   const handleCreateRoom = () => {
-    socket.emit("create-room", null, (newRoomId: string) => {
+    socket.emit("create-room", playerName, (newRoomId: string) => {
       console.log("Created Room:", newRoomId);
       setRoomId(newRoomId);
       setStatus("Waiting for player to join...")
@@ -62,9 +63,9 @@ export default function Multiplayer() {
       setPlayerName(null);
     }
     // subscribe to socket events
-    socket.on("rooms-list", (rooms: string[]) => {
+    socket.on("rooms-list", (rooms: Room[]) => {
       console.log("Available rooms:", rooms);
-      setRoomIds(rooms);
+      setAvailableRooms(rooms);
     });
     socket.on("connect", () => {
       console.log("Connected to game server!", socket.id);
@@ -72,14 +73,8 @@ export default function Multiplayer() {
 
     socket.on("player-joined", (room: Room) => {
       console.log("Player joined room:", room);
-      const playerIndex = socket.id ? room.players.indexOf(socket.id) : -1;
-      console.log("Player index:", playerIndex);
-      if (playerIndex % 2 === 0) {
-        setPlayerColor('B');
-      }
-      else {
-        setPlayerColor('R');
-      }
+      const pColor = room.players.find(player => player.socketId === socket.id)?.color || 'N';
+      setPlayerColor(pColor);
       setStatus("Player joined the room!");
       if (room.players.length >= 2) {
         setIsAllPlayersReady(true);
@@ -308,11 +303,11 @@ export default function Multiplayer() {
       grid?: Cell[][];
     }
 
-    socket.emit("join-room", roomId, (response: JoinRoomResponse) => {
+    socket.emit("join-room", roomId, playerName, (response: JoinRoomResponse) => {
       if (response.error) {
-      setStatus("❌ " + response.error);
+      setStatus("Failed to join: " + response.error);
       } else {
-        setStatus("✅ Joined room!");
+        setStatus("Joined room!");
         setRoomId(roomId)
         console.log("Joined Room:", roomId);
         console.log("Initial game grid:", response.grid);
@@ -379,27 +374,27 @@ export default function Multiplayer() {
           </div>
           
           {status !== "Waiting for player to join..." ? (
-            <div className="flex flex-col mt-4 items-center text-primary">
+            <div className="flex flex-col mt-4 items-center text-primary w-full">
               <div className="space-x-4 flex flex-row mb-5 items-center">
-                <div className="text-xl font-semibold text-center">{`Available Rooms (${roomIds.length})`}</div>
+                <div className="text-xl font-semibold text-center">{`Available Rooms (${availableRooms.length})`}</div>
                 <IoMdRefresh
                   onClick={() => socket.emit("get-rooms")} 
                   className="text-primary text-2xl hover:scale-110 hover:cursor-pointer transition duration-300"
                 />
               </div>
-              <div className="flex flex-wrap w-full justify-around px-50">
-                {roomIds.map((id) => (
-                  <div key={id}>
-                    <button 
-                      onClick={() => handleJoinRoom(id)} 
-                      className="hover:cursor-pointer hover:bg-gray-900 transition duration-300 border py-4 px-7 m-2 rounded-lg min-w-[150px]"
-                    >
-                      <div className="flex items-center justify-center font-semibold text-lg">
-                        <FaDotCircle className="mr-auto text-green-400" />
-                        {id}
-                      </div>
-                    </button>
-                  </div>
+              <div className="flex flex-col items-center w-full space-y-2">
+                {availableRooms?.map((room) => (
+                  <button 
+                    onClick={() => handleJoinRoom(room.roomId)} 
+                    className="hover:cursor-pointer hover:bg-gray-900 transition duration-300 border py-4 px-7 rounded-lg w-full"
+                    key={room.roomId ? room.roomId : uuidv4()}
+                  >
+                    <div className="flex items-center text-lg space-x-3">
+                      <FaDotCircle className={`${room.players?.length === 2 ? 'text-red-400' : 'text-green-400'}`} />
+                      <div className="mr-auto font-semibold">{room.roomId}</div>
+                      <div>Host: {room.host}</div>
+                    </div>
+                  </button>
                 ))}
               </div> 
             </div>

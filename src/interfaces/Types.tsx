@@ -11,11 +11,18 @@ export type BurstDotStructure = {
 };
 
 export type Room = {
-  id: string;
-  players: string[];
+  roomId: string;
+  host: string;
+  players: ServerSidePlayer[];
   grid: Cell[][];
   turn: number;
   createdAt: Date;
+}
+
+type ServerSidePlayer = {
+  playerName: string;
+  socketId: string;
+  color: Color;
 }
 
 export const ColorMap = {
