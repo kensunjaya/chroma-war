@@ -321,7 +321,7 @@ export default function Multiplayer() {
       <main className="flex justify-center text-primary font-primary">
         {!playerName && (
           <Modal 
-            title={"Fill username"}
+            title={"Enter username"}
             body={"Other players will see your username."}
             buttonLabel="Save"
             isLoading={false}

@@ -32,23 +32,26 @@ const Modal: React.FC<ModalProps> = ({title, body, buttonLabel, isLoading, input
       <div className="p-8 w-96 shadow shadow-5xl rounded-md bg-primary">
         <div className="text-center">
           <h3 className="text-2xl font-bold text-secondary">{title}</h3>
-          <div className="mt-2 px-7 py-3">
+          <div className="px-7 py-3">
             <p className="text-lg text-gray-500">{body}</p>
           </div>
           {(input === "" || input) && (
             <input 
               type="text" 
-              placeholder="Enter your nickname" 
-              className="w-full py-1 outline-1 outline-gray-400 focus:outline-1 focus:outline-fourth rounded-md text-center text-secondary"
+              placeholder="Min 3 characters" 
+              className="w-full mb-2 py-1 outline-1 outline-gray-400 focus:outline-1 focus:outline-fourth rounded-md text-center text-secondary"
               onChange={(e) => setInput && setInput(e.target.value)}
-              maxLength={20}
+              maxLength={15}
             />
           )}
           <div className="flex flex-col justify-center mt-4 items-center">
             {errorMsg && <p className="text-red-500 text-sm mb-4">{errorMsg}</p>}
             <button
               onClick={() => handleClick()}
-              disabled={isLoading}
+              disabled={
+                isLoading ||
+                (input !== undefined && (input.length < 3 || input.length > 15))
+              }
               className="px-4 hover:cursor-pointer py-2 w-fit transition duration-300 disabled:hover:cursor-default bg-fourth disabled:bg-gray-400 text-white font-medium rounded-md shadow-sm hover:opacity-75 focus:outline-none focus:ring-2"
             >
               {buttonLabel}
