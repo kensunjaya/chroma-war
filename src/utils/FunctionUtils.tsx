@@ -13,8 +13,8 @@ export const buildFewShotPrompt = (dataset: any, task: any) => {
 }
 
 export const moveFistTurn = (cells: Cell[][]): string => {
-  const row = Math.floor(Math.random() * 4) + 1;
-  const col = Math.floor(Math.random() * 4) + 1;
+  const row = Math.floor(Math.random() * 2) + 2;
+  const col = Math.floor(Math.random() * 2) + 2;
   const isValid = validateFirstMove(cells, row, col);
   if (isValid) {
     return `${row},${col},unknown`; // Return unknown model since it's the first turn
@@ -27,6 +27,7 @@ export const validateFirstMove = (cells: Cell[][], row: number, col: number): bo
   if (row === 0 || col === 0) {
     return false; // not a good first move as it limits the spread to 2 or 3 cells
   }
+
 
   if (cells[row][col+1].color === 'B' || cells[row+1][col].color === 'B' || cells[row][col-1].color === 'B' || cells[row-1][col].color === 'B') {
     return false; // invalid as the blue will instantly win on the next turn
@@ -150,8 +151,8 @@ const evaluateBoard = (colorCount: { [key in Color]: number }): number => {
 }
 
 export const minimaxFirstTurn = (cells: Cell[][]): MiniMaxOutput => {
-  const row = Math.floor(Math.random() * 4) + 1;
-  const col = Math.floor(Math.random() * 4) + 1;
+  const row = Math.floor(Math.random() * 2) + 2;
+  const col = Math.floor(Math.random() * 2) + 2;
   const isValid = validateFirstMove(cells, row, col);
   if (isValid) {
     return { row, col, score: 0 }; // Return score 0 since it's the first turn

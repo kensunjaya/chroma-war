@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
 import { Dots } from '@/components/Dots'; 
 import { checkWinner, findBestMove, sleep } from '@/utils/FunctionUtils';
@@ -7,6 +8,7 @@ import Modal from '@/components/Modal';
 import { Navigation } from '@/components/Navigation';
 import { BurstDot } from '@/utils/Animation';
 import { useTailwindBreakpoint } from '@/hooks/Breakpoint';
+import RuleModal from '@/components/RuleModal';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
@@ -14,6 +16,7 @@ const colsCount: number = 6;
 // Main Component
 export default function MiniMax() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
+  const [userId, setUserId] = useState<string | null>("123");
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
   const [displayedTurn, setDisplayedTurn] = useState(0);
@@ -26,6 +29,18 @@ export default function MiniMax() {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const breakpoint = useTailwindBreakpoint();
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    setTimeout(() => {
+      if (storedUserId) {
+        setUserId(storedUserId);
+      } else {
+        setUserId(null);
+      }
+    }, 1000);
+
+  }, []);
 
   useEffect(() => {
     if (isProcessing) return;
@@ -41,6 +56,12 @@ export default function MiniMax() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing]);
+
+  const closeRuleModal = () => {
+    const newUserId = uuidv4();
+    localStorage.setItem('userId', newUserId);
+    setUserId(newUserId);
+  }
 
   const resetGame = () => {
     setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
@@ -183,6 +204,9 @@ export default function MiniMax() {
           isLoading={false}
           setState={() => resetGame()}
         />
+      )}
+      {!userId && (
+        <RuleModal setState={() => closeRuleModal()}/>
       )}
       <div className={`z-1 transition duration-300 ease-in-out`}>
         <Navigation currentPage='minimax' />
