@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,7 +9,9 @@ import Modal from '@/components/Modal';
 import { Navigation } from '@/components/Navigation';
 import { BurstDot } from '@/utils/Animation';
 import { useTailwindBreakpoint } from '@/hooks/Breakpoint';
+import { HiOutlineSelector } from "react-icons/hi";
 import RuleModal from '@/components/RuleModal';
+import DifficultyModal from '@/components/DifficultyModal';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
@@ -17,6 +20,8 @@ const colsCount: number = 6;
 export default function MiniMax() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
   const [userId, setUserId] = useState<string | null>("123");
+  const [showDifficultyModal, setShowDifficultyModal] = useState<boolean>(false);
+  const [difficulty, setDifficulty] = useState<number>(0);
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
   const [displayedTurn, setDisplayedTurn] = useState(0);
@@ -31,6 +36,12 @@ export default function MiniMax() {
   const breakpoint = useTailwindBreakpoint();
 
   useEffect(() => {
+    if (!localStorage.getItem('difficulty')) {
+      setShowDifficultyModal(true);
+    } else {
+      const storedDifficulty = parseInt(localStorage.getItem('difficulty') || '1');
+      setDifficulty(storedDifficulty);
+    }
     const storedUserId = localStorage.getItem('userId');
     setTimeout(() => {
       if (storedUserId) {
@@ -38,9 +49,15 @@ export default function MiniMax() {
       } else {
         setUserId(null);
       }
-    }, 1000);
-
+    }, 500);
   }, []);
+
+  useEffect(() => {
+    if (difficulty !== 0) {
+      localStorage.setItem('difficulty', difficulty.toString());
+      resetGame();
+    }
+  }, [difficulty]);
 
   useEffect(() => {
     if (isProcessing) return;
@@ -50,17 +67,19 @@ export default function MiniMax() {
     setDisplayedTurn(turn);
     if (turn % 2 !== 0) {
       setTimeout(() => {
-        const { row, col } = findBestMove(cells, 5, turn, colorCount);
+        const { row, col } = findBestMove(cells, difficulty, turn, colorCount);
         handleClick(row, col);
       }, 1);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing]);
 
   const closeRuleModal = () => {
     const newUserId = uuidv4();
     localStorage.setItem('userId', newUserId);
     setUserId(newUserId);
+    if (!localStorage.getItem('difficulty')) {
+      setShowDifficultyModal(true);
+    }
   }
 
   const resetGame = () => {
@@ -208,9 +227,26 @@ export default function MiniMax() {
       {!userId && (
         <RuleModal setState={() => closeRuleModal()}/>
       )}
+      {
+        (showDifficultyModal && userId && userId !== "123") && (
+          <DifficultyModal 
+            setState={() => setShowDifficultyModal(false)} 
+            setDifficulty={(difficulty) => {
+              setDifficulty(difficulty);
+              localStorage.setItem('difficulty', difficulty.toString());
+            }}
+            difficulty={difficulty}
+          />
+        )
+      }
       <div className={`z-1 transition duration-300 ease-in-out`}>
         <Navigation currentPage='minimax' />
-        <div className="flex flex-col items-center py-3 sm:py-4 font-primary">
+        <div className="flex flex-col pb-3 sm:pb-4 font-primary">
+          <div className="flex flex-row items-center space-x-2 cursor-pointer min-h-6" onClick={() => setShowDifficultyModal(true)}>
+            <HiOutlineSelector />
+            <div>{difficulty === 1 ? "Easy" : difficulty === 3 ? "Medium" : difficulty === 5 ? "Hard" : "Select Difficulty"}</div>
+          </div>
+          
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button

@@ -34,7 +34,7 @@ const RuleModal: React.FC<ModalProps> = ({setState}) => {
                 <li>{"When a cell reaches 4 dots, it explodes and affects its neighbors."}</li>
                 <li>{"The game ends when one player dominates the board."}</li>
               </ol>
-              <video src={isMobile ? "demo_preview_mobile.mp4" : "demo_preview.mp4"} className={`${isMobile ? "h-40" : "w-40"} rounded-md`} autoPlay muted loop playsInline />
+              <video src={isMobile ? "demo_preview_mobile.mp4" : "demo_preview.mp4"} className={`${isMobile ? "h-40" : "w-40"} rounded-md pointer-events-none`} autoPlay muted loop playsInline />
             </div>
             <p>{"Let the Chroma War begin, every tap matters!"}</p>
           </div>

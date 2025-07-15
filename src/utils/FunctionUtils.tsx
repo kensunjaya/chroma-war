@@ -72,7 +72,6 @@ const minimax = (cells: Cell[][], depth: number, isMaximizing: boolean, alpha: n
       const cell = cells[row][col];
       if (cell.color === 'N' || cell.color !== color) continue;
 
-      // Simulate move
       const newCells = JSON.parse(JSON.stringify(cells));
       newCells[row][col].color = color;
       const newColorCount = { ...colorCount };
@@ -109,7 +108,6 @@ export const findBestMove = (cells: Cell[][], depth: number, turn: number, color
       const cell = cells[row][col];
       if (cell.color === 'N' || cell.color !== 'R') continue;
 
-      // Simulate move
       const cloneCells = (cells: Cell[][]): Cell[][] => cells.map(row => row.map(cell => ({ ...cell })));
       const newCells = cloneCells(cells);
       newCells[row][col].color = 'R';
