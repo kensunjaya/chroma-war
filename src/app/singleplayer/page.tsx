@@ -21,7 +21,7 @@ export default function MiniMax() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
   const [userId, setUserId] = useState<string | null>("123");
   const [showDifficultyModal, setShowDifficultyModal] = useState<boolean>(false);
-  const [difficulty, setDifficulty] = useState<number>(0);
+  const [difficulty, setDifficulty] = useState<number>(-1);
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
   const [displayedTurn, setDisplayedTurn] = useState(0);
@@ -38,6 +38,7 @@ export default function MiniMax() {
   useEffect(() => {
     if (!localStorage.getItem('difficulty')) {
       setShowDifficultyModal(true);
+      setDifficulty(0);
     } else {
       const storedDifficulty = parseInt(localStorage.getItem('difficulty') || '1');
       setDifficulty(storedDifficulty);
@@ -244,7 +245,7 @@ export default function MiniMax() {
         <div className="flex flex-col pb-3 sm:pb-4 font-primary">
           <div className="flex flex-row items-center space-x-2 cursor-pointer min-h-6" onClick={() => setShowDifficultyModal(true)}>
             <HiOutlineSelector />
-            <div className="font-medium">{difficulty === 1 ? "Easy" : difficulty === 3 ? "Medium" : difficulty === 5 ? "Hard" : "Select Difficulty"}</div>
+            <div className="font-medium">{difficulty === 1 ? "Easy" : difficulty === 3 ? "Medium" : difficulty === 5 ? "Hard" : difficulty === 0 ? "Select Difficulty" : ""}</div>
           </div>
           
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>

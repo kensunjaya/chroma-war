@@ -55,6 +55,7 @@ const DifficultyModal: React.FC<ModalProps> = ({setState, setDifficulty, difficu
           <button
             onClick={handleClick}
             className="px-4 hover:cursor-pointer py-2 w-fit transition duration-300 disabled:hover:cursor-default bg-fourth disabled:bg-gray-400 text-white font-medium rounded-md shadow-sm hover:opacity-75 focus:outline-none focus:ring-2"
+            disabled={localDifficulty === 0}
           >
             Confirm
           </button>
