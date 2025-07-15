@@ -12,7 +12,7 @@ export const Navigation = ({ currentPage }: NavigationProps) => {
         <h1 className="text-center text-4xl sm:text-4xl md:text-5xl select-none pointer-events-none font-bold">{"CHROMA WAR"}</h1>
         <FaGithub className="cursor-pointer" onClick={() => window.open("https://github.com/kensunjaya/", "_blank")} />
       </div>
-      <div className="flex items-center font-primary font-normal text-xs md:text-lg justify-center p-4 w-full">
+      <div className="flex items-center font-primary font-medium text-xs md:text-lg justify-center p-4 w-full">
         <nav className="justify-around lg:space-x-6 flex flex-row items-center">
           <Link
             href="/singleplayer"
