@@ -1,17 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Anonymous+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import "tailwindcss";
 
-@theme {
-  --font-primary: "Poppins", sans-serif;
-  --font-title: "Cabin Sketch", sans-serif;
-  --font-mono: "Anonymous Pro", monospace;
-  --font-style: normal;
-  --font-optical-sizing: auto;
-  --font-weight: 400;
+:root {
   --color-primary: #DCD7C9;
   --color-secondary: #1C2B2D;
   --color-third: #000000;
   --color-fourth: #BF8C63;
 }
+
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-third: var(--color-third);
+  --color-fourth: var(--color-fourth);
+
+  --font-primary: var(--font-poppins);
+  --font-title: var(--font-cabin-sketch);
+  --font-mono: var(--font-anonymous-pro);
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-secondary);
+}
+

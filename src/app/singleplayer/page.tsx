@@ -215,7 +215,7 @@ export default function MiniMax() {
   };
 
   return (
-    <main className="flex justify-center font-primary text-primary">
+    <main className="flex justify-center text-primary">
       {winner && (
         <Modal 
           title={winner === 'B' ? '🎉 You Win!' : 'You Lose!'}
@@ -242,7 +242,7 @@ export default function MiniMax() {
       }
       <div className={`z-1 transition duration-300 ease-in-out`}>
         <Navigation currentPage='minimax' />
-        <div className="flex flex-col pb-3 sm:pb-4 font-primary">
+        <div className="flex flex-col pb-3 sm:pb-4">
           <div className="flex flex-row items-center space-x-2 cursor-pointer min-h-6" onClick={() => setShowDifficultyModal(true)}>
             <HiOutlineSelector />
             <div className="font-medium">{difficulty === 1 ? "Easy" : difficulty === 3 ? "Medium" : difficulty === 5 ? "Hard" : difficulty === 0 ? "Select Difficulty" : ""}</div>

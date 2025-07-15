@@ -318,7 +318,7 @@ export default function Multiplayer() {
 
   if (!isAllPlayersReady) {
     return (
-      <main className="flex justify-center text-primary font-primary">
+      <main className="flex justify-center text-primary">
         {!playerName && (
           <Modal 
             title={"Enter username"}
@@ -415,7 +415,7 @@ export default function Multiplayer() {
   }
 
   return (
-    <main className="flex justify-center font-primary">
+    <main className="flex justify-center">
       {winner && (
         <Modal 
           title={winner === playerColor ? '🎉 You Win!' : 'You Lose!'}
@@ -434,7 +434,7 @@ export default function Multiplayer() {
             </p>
           )}
         </div>
-        <div className="flex flex-col items-center py-3 sm:py-4 font-primary">
+        <div className="flex flex-col items-center py-3 sm:py-4">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button

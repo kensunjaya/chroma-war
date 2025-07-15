@@ -221,7 +221,7 @@ export default function VersusAI() {
   };
 
   return (
-    <main className="flex justify-center font-primary text-primary">
+    <main className="flex justify-center text-primary">
       {winner && (
         <Modal 
           title={winner === 'B' ? '🎉 You Win!' : 'You Lose!'}
@@ -233,7 +233,7 @@ export default function VersusAI() {
       )}
       <div className={`z-1 transition duration-300 ease-in-out`}>
         <Navigation currentPage='vsllm' />
-        <div className="flex flex-col items-center py-3 sm:py-4 font-primary">
+        <div className="flex flex-col items-center py-3 sm:py-4">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
