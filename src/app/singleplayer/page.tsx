@@ -54,7 +54,7 @@ export default function MiniMax() {
   }, []);
 
   useEffect(() => {
-    if (difficulty !== 0) {
+    if (difficulty > 0) {
       localStorage.setItem('difficulty', difficulty.toString());
       resetGame();
     }
