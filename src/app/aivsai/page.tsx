@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import { useEffect, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
 import { Dots } from '@/components/Dots'; 
 import { checkWinner, findBestMove, sleep } from '@/utils/FunctionUtils';
@@ -9,9 +8,6 @@ import Modal from '@/components/Modal';
 import { Navigation } from '@/components/Navigation';
 import { BurstDot } from '@/utils/Animation';
 import { useTailwindBreakpoint } from '@/hooks/Breakpoint';
-import { HiOutlineSelector } from "react-icons/hi";
-import RuleModal from '@/components/RuleModal';
-import DifficultyModal from '@/components/DifficultyModal';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
@@ -19,9 +15,6 @@ const colsCount: number = 6;
 // Main Component
 export default function AIvsAI() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
-  const [userId, setUserId] = useState<string | null>("123");
-  const [showDifficultyModal, setShowDifficultyModal] = useState<boolean>(false);
-  const [difficulty, setDifficulty] = useState<number>(-1);
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
   const [displayedTurn, setDisplayedTurn] = useState(0);
@@ -37,31 +30,6 @@ export default function AIvsAI() {
   const breakpoint = useTailwindBreakpoint();
 
   useEffect(() => {
-    if (!localStorage.getItem('difficulty')) {
-      setShowDifficultyModal(true);
-      setDifficulty(0);
-    } else {
-      const storedDifficulty = parseInt(localStorage.getItem('difficulty') || '1');
-      setDifficulty(storedDifficulty);
-    }
-    const storedUserId = localStorage.getItem('userId');
-    setTimeout(() => {
-      if (storedUserId) {
-        setUserId(storedUserId);
-      } else {
-        setUserId(null);
-      }
-    }, 500);
-  }, []);
-
-  useEffect(() => {
-    if (difficulty > 0) {
-      localStorage.setItem('difficulty', difficulty.toString());
-      resetGame();
-    }
-  }, [difficulty]);
-
-  useEffect(() => {
     if (isProcessing) return;
     if (!gameStarted) return;
     const win = checkWinner(turn, colorCount);
@@ -69,19 +37,10 @@ export default function AIvsAI() {
     if (win) return;
     setDisplayedTurn(turn);
     setTimeout(() => {
-      const { row, col } = findBestMove(cells, difficulty, turn, colorCount, (turn % 2 === 0 ? 'B' : 'R'));
+      const { row, col } = findBestMove(cells, 5, turn, colorCount, (turn % 2 === 0 ? 'B' : 'R'));
       handleClick(row, col);
     }, 10);
   }, [isProcessing, gameStarted]);
-
-  const closeRuleModal = () => {
-    const newUserId = uuidv4();
-    localStorage.setItem('userId', newUserId);
-    setUserId(newUserId);
-    if (!localStorage.getItem('difficulty')) {
-      setShowDifficultyModal(true);
-    }
-  }
 
   const resetGame = () => {
     setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
@@ -225,36 +184,16 @@ export default function AIvsAI() {
       )}
       {!gameStarted && (
         <Modal  
-          title="Welcome to AI vs AI"
-          body="This is a mode where two AI agents compete against each other."
+          title="Welcome to AI Battle Mode"
+          body="This is a mode where two AI agents compete against each other optimally."
           buttonLabel="Start Match"
           isLoading={false}
           setState={() => setGameStarted(true)}
         />
       )}
-      {!userId && (
-        <RuleModal setState={() => closeRuleModal()}/>
-      )}
-      {
-        (showDifficultyModal && userId && userId !== "123") && (
-          <DifficultyModal 
-            setState={() => setShowDifficultyModal(false)} 
-            setDifficulty={(difficulty) => {
-              setDifficulty(difficulty);
-              localStorage.setItem('difficulty', difficulty.toString());
-            }}
-            difficulty={difficulty}
-          />
-        )
-      }
       <div className={`z-1 transition duration-300 ease-in-out`}>
         <Navigation currentPage='aivsai' />
         <div className="flex flex-col pb-3 sm:pb-4">
-          <div className="flex flex-row items-center space-x-2 cursor-pointer min-h-6" onClick={() => setShowDifficultyModal(true)}>
-            <HiOutlineSelector />
-            <div className="font-medium">{difficulty === 1 ? "Easy" : difficulty === 3 ? "Medium" : difficulty === 5 ? "Hard" : difficulty === 0 ? "Select Difficulty" : ""}</div>
-          </div>
-          
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
