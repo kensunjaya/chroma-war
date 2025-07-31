@@ -56,15 +56,16 @@ export const checkWinner = (turn: number, colorCount: {[key in Color]: number}) 
 }
 
 
-const minimax = (cells: Cell[][], depth: number, isMaximizing: boolean, alpha: number, beta: number, turn: number, colorCount: {[key in Color]: number}): number => {
+const minimax = (cells: Cell[][], depth: number, isMaximizing: boolean, alpha: number, beta: number, turn: number, colorCount: {[key in Color]: number}, currentTurn: Color): number => {
   const winner = checkWinner(turn, colorCount);
-  if (winner === 'B') return -Infinity;
-  if (winner === 'R') return Infinity;
+  if (winner === (currentTurn === 'R' ? 'B' : 'R')) return -Infinity;
+  if (winner === currentTurn) return Infinity;
   if (depth === 0) {
-    return evaluateBoard(colorCount);
+    const score = evaluateBoard(colorCount);
+    return (currentTurn === 'R' ? score : -score);
   }
 
-  const color: Color = isMaximizing ? 'R' : 'B';
+  const color: Color = isMaximizing ? currentTurn : (currentTurn === 'R' ? 'B' : 'R');
   let bestScore = isMaximizing ? -Infinity : Infinity;
 
   for (let row = 0; row < cells.length; row++) {
@@ -77,7 +78,7 @@ const minimax = (cells: Cell[][], depth: number, isMaximizing: boolean, alpha: n
       const newColorCount = { ...colorCount };
       recursiveFill(newCells, row, col, color, newColorCount);
 
-      const score = minimax(newCells, depth - 1, !isMaximizing, alpha, beta, turn + 1, newColorCount);
+      const score = minimax(newCells, depth - 1, !isMaximizing, alpha, beta, turn + 1, newColorCount, currentTurn);
 
       if (isMaximizing) {
         bestScore = Math.max(bestScore, score);
@@ -95,7 +96,7 @@ const minimax = (cells: Cell[][], depth: number, isMaximizing: boolean, alpha: n
 }
 
 
-export const findBestMove = (cells: Cell[][], depth: number, turn: number, colorCount: {[key in Color]: number}): MiniMaxOutput => {
+export const findBestMove = (cells: Cell[][], depth: number, turn: number, colorCount: {[key in Color]: number}, currentTurn: Color = 'R'): MiniMaxOutput => {
   if (turn < 2) {
     return minimaxFirstTurn(cells); // No valid moves on first turn
   }
@@ -106,15 +107,15 @@ export const findBestMove = (cells: Cell[][], depth: number, turn: number, color
   for (let row = 0; row < cells.length; row++) {
     for (let col = 0; col < cells[row].length; col++) {
       const cell = cells[row][col];
-      if (cell.color === 'N' || cell.color !== 'R') continue;
+      if (cell.color === 'N' || cell.color !== currentTurn) continue;
 
       const cloneCells = (cells: Cell[][]): Cell[][] => cells.map(row => row.map(cell => ({ ...cell })));
       const newCells = cloneCells(cells);
-      newCells[row][col].color = 'R';
+      newCells[row][col].color = currentTurn;
       const newColorCount = { ...colorCount };
-      recursiveFill(newCells, row, col, 'R', newColorCount);
+      recursiveFill(newCells, row, col, currentTurn, newColorCount);
 
-      const score = minimax(newCells, depth - 1, false, -Infinity, Infinity, turn + 1, newColorCount);
+      const score = minimax(newCells, depth - 1, false, -Infinity, Infinity, turn + 1, newColorCount, currentTurn);
 
       if (score > bestScore) {
         bestScore = score;
@@ -128,7 +129,7 @@ export const findBestMove = (cells: Cell[][], depth: number, turn: number, color
     for (let row = 0; row < cells.length; row++) {
       for (let col = 0; col < cells[row].length; col++) {
         const cell = cells[row][col];
-        if (cell.color === 'R') {
+        if (cell.color === currentTurn) {
           bestMove = { row, col };
           break;
         }

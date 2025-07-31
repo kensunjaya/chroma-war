@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 
 interface NavigationProps {
-  currentPage: 'vsllm' | 'minimax' | 'twoplayers' | 'multiplayer';
+  currentPage: 'vsllm' | 'minimax' | 'twoplayers' | 'multiplayer' | 'aivsai';
 }
 export const Navigation = ({ currentPage }: NavigationProps) => {
   return (
@@ -12,25 +12,31 @@ export const Navigation = ({ currentPage }: NavigationProps) => {
         <h1 className="text-center text-4xl sm:text-4xl md:text-5xl select-none pointer-events-none font-bold">{"CHROMA WAR"}</h1>
         <FaGithub className="cursor-pointer" onClick={() => window.open("https://github.com/kensunjaya/", "_blank")} />
       </div>
-      <div className="flex items-center font-primary font-medium text-xs md:text-lg justify-center p-4 w-full">
-        <nav className="justify-around lg:space-x-6 flex flex-row items-center">
+      <div className="flex items-center font-primary font-medium text-xs md:text-lg justify-center py-4 w-full">
+        <nav className="justify-around space-x-4 lg:space-x-10 flex flex-row items-center">
           <Link
             href="/singleplayer"
-            className={`transition px-3 rounded-sm ${currentPage === 'minimax' ? 'text-fourth' : 'cursor-pointer hover:scale-110 hover:opacity-50'}`}
+            className={`transition rounded-sm ${currentPage === 'minimax' ? 'text-fourth' : 'cursor-pointer hover:scale-110 hover:opacity-50'}`}
           >
-            VERSUS AI
+            Versus AI
+          </Link>
+          <Link
+            href="/aivsai"
+            className={`transition rounded-sm ${currentPage === 'aivsai' ? 'text-fourth' : 'cursor-pointer hover:scale-110 hover:opacity-50'}`}
+          >
+            AI Battle
           </Link>
           <Link
             href="/twoplayers"
-            className={`transition px-3 rounded-sm ${currentPage === 'twoplayers' ? 'text-fourth' : 'cursor-pointer hover:scale-110 hover:opacity-50'}`}
+            className={`transition rounded-sm ${currentPage === 'twoplayers' ? 'text-fourth' : 'cursor-pointer hover:scale-110 hover:opacity-50'}`}
           >
-            PASS & PLAY
+            2P Local
           </Link>
           <Link
             href="/multiplayer"
-            className={`transition px-3 rounded-sm ${currentPage === 'multiplayer' ? 'text-fourth' : 'cursor-pointer hover:scale-110 hover:opacity-50'}`}
+            className={`transition rounded-sm ${currentPage === 'multiplayer' ? 'text-fourth' : 'cursor-pointer hover:scale-110 hover:opacity-50'}`}
           >
-            MULTIPLAYER
+            Online Multiplayer
           </Link>
         </nav>
       </div>

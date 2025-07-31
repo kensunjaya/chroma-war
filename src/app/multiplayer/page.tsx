@@ -419,8 +419,8 @@ export default function Multiplayer() {
       {winner && (
         <Modal 
           title={winner === playerColor ? '🎉 You Win!' : 'You Lose!'}
-          body={"Press the button below to play again."}
-          buttonLabel={isWaitingForPlayer ? "Waiting for opponent ..." : "Play Again"}
+          body={`The game has ended after ${turn} turns.`}
+          buttonLabel={isWaitingForPlayer ? "Waiting for opponent ..." : "Rematch"}
           isLoading={isWaitingForPlayer}
           setState={() => resetGame()}
         />

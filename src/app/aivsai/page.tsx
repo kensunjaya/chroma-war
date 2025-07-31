@@ -1,23 +1,32 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { BurstDotStructure, Cell, Color, Direction } from '@/interfaces/Types';
-import { checkWinner, sleep } from '@/utils/FunctionUtils';
+import { Dots } from '@/components/Dots'; 
+import { checkWinner, findBestMove, sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
-import { Dots } from '@/components/Dots';
 import { Navigation } from '@/components/Navigation';
 import { BurstDot } from '@/utils/Animation';
 import { useTailwindBreakpoint } from '@/hooks/Breakpoint';
+import { HiOutlineSelector } from "react-icons/hi";
+import RuleModal from '@/components/RuleModal';
+import DifficultyModal from '@/components/DifficultyModal';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
 
 // Main Component
-export default function PassPlay() {
+export default function AIvsAI() {
   const [cells, setCells] = useState<Cell[][]>(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
+  const [userId, setUserId] = useState<string | null>("123");
+  const [showDifficultyModal, setShowDifficultyModal] = useState<boolean>(false);
+  const [difficulty, setDifficulty] = useState<number>(-1);
   const [turn, setTurn] = useState(0);
   const [winner, setWinner] = useState<Color | null>(null);
   const [displayedTurn, setDisplayedTurn] = useState(0);
   const [burstDots, setBurstDots] = useState<{ row: number; col: number; dot: BurstDotStructure }[]>([]);
+  const [gameStarted, setGameStarted] = useState<boolean>(false);
   const [colorCount, setColorCount] = useState<{ [key in Color]: number }>({
     'N': rowsCount * colsCount,
     'B': 0,
@@ -28,13 +37,51 @@ export default function PassPlay() {
   const breakpoint = useTailwindBreakpoint();
 
   useEffect(() => {
+    if (!localStorage.getItem('difficulty')) {
+      setShowDifficultyModal(true);
+      setDifficulty(0);
+    } else {
+      const storedDifficulty = parseInt(localStorage.getItem('difficulty') || '1');
+      setDifficulty(storedDifficulty);
+    }
+    const storedUserId = localStorage.getItem('userId');
+    setTimeout(() => {
+      if (storedUserId) {
+        setUserId(storedUserId);
+      } else {
+        setUserId(null);
+      }
+    }, 500);
+  }, []);
+
+  useEffect(() => {
+    if (difficulty > 0) {
+      localStorage.setItem('difficulty', difficulty.toString());
+      resetGame();
+    }
+  }, [difficulty]);
+
+  useEffect(() => {
     if (isProcessing) return;
+    if (!gameStarted) return;
     const win = checkWinner(turn, colorCount);
     setWinner(win);
     if (win) return;
     setDisplayedTurn(turn);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isProcessing]);
+    setTimeout(() => {
+      const { row, col } = findBestMove(cells, difficulty, turn, colorCount, (turn % 2 === 0 ? 'B' : 'R'));
+      handleClick(row, col);
+    }, 10);
+  }, [isProcessing, gameStarted]);
+
+  const closeRuleModal = () => {
+    const newUserId = uuidv4();
+    localStorage.setItem('userId', newUserId);
+    setUserId(newUserId);
+    if (!localStorage.getItem('difficulty')) {
+      setShowDifficultyModal(true);
+    }
+  }
 
   const resetGame = () => {
     setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
@@ -45,6 +92,7 @@ export default function PassPlay() {
     setColorCount({ ...colorCount });
     setDisplayedTurn(0);
     setIsProcessing(false);
+    setGameStarted(false);
     setWinner(null);
     setBurstDots([]);
   }
@@ -147,7 +195,7 @@ export default function PassPlay() {
       }
 
       const promises = [];
-
+      // now recursively fill adjacent cells
       if (row > 0) {
         promises.push(recursiveFill(row - 1, col, color, delayMs));
       }
@@ -165,28 +213,58 @@ export default function PassPlay() {
   };
 
   return (
-    <main className="flex justify-center">
+    <main className="flex justify-center text-primary">
       {winner && (
         <Modal 
           title={winner === 'B' ? 'Blue Wins!' : 'Red Wins!'}
-          body={`The game has ended after ${displayedTurn} turns.`}
+          body={`After ${displayedTurn} optimal turns, victory has been claimed by ${winner === 'B' ? 'Blue' : 'Red'} team!`}
           buttonLabel="Rematch"
           isLoading={false}
           setState={() => resetGame()}
         />
       )}
-      <div className={`z-10 transition duration-300 ease-in-out`}>
-        <Navigation currentPage='twoplayers' />
-        <div className="flex flex-col items-center py-3 sm:py-4">
+      {!gameStarted && (
+        <Modal  
+          title="Welcome to AI vs AI"
+          body="This is a mode where two AI agents compete against each other."
+          buttonLabel="Start Match"
+          isLoading={false}
+          setState={() => setGameStarted(true)}
+        />
+      )}
+      {!userId && (
+        <RuleModal setState={() => closeRuleModal()}/>
+      )}
+      {
+        (showDifficultyModal && userId && userId !== "123") && (
+          <DifficultyModal 
+            setState={() => setShowDifficultyModal(false)} 
+            setDifficulty={(difficulty) => {
+              setDifficulty(difficulty);
+              localStorage.setItem('difficulty', difficulty.toString());
+            }}
+            difficulty={difficulty}
+          />
+        )
+      }
+      <div className={`z-1 transition duration-300 ease-in-out`}>
+        <Navigation currentPage='aivsai' />
+        <div className="flex flex-col pb-3 sm:pb-4">
+          <div className="flex flex-row items-center space-x-2 cursor-pointer min-h-6" onClick={() => setShowDifficultyModal(true)}>
+            <HiOutlineSelector />
+            <div className="font-medium">{difficulty === 1 ? "Easy" : difficulty === 3 ? "Medium" : difficulty === 5 ? "Hard" : difficulty === 0 ? "Select Difficulty" : ""}</div>
+          </div>
+          
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
-                onClick={() => handleClick(rowIndex, colIndex)}
+                // onClick={() => handleClick(rowIndex, colIndex, true)}
+                disabled={true}
                 key={rowIndex * rowsCount + colIndex}
                 className={`p-1 md:p-1.5 lg:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
               >
                 <div
-                  className={`transition-all duration-300 relative flex justify-center items-center w-full h-full`}
+                  className={`relative flex justify-center items-center w-full h-full`}
                 >
                   <div className={`transition-all duration-200 absolute inset-0 rounded-full ${cell.color === 'B' ? 'bg-blue-500' : cell.color === 'R' ? 'bg-red-500' : 'bg-primary'}`} />
                   {cell.val !== 0 && Dots(cell.val)}

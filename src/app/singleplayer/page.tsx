@@ -70,7 +70,7 @@ export default function MiniMax() {
       setTimeout(() => {
         const { row, col } = findBestMove(cells, difficulty, turn, colorCount);
         handleClick(row, col);
-      }, 1);
+      }, 10);
     }
   }, [isProcessing]);
 
@@ -219,8 +219,8 @@ export default function MiniMax() {
       {winner && (
         <Modal 
           title={winner === 'B' ? '🎉 You Win!' : 'You Lose!'}
-          body={"Press the button below to play again."}
-          buttonLabel="Play Again"
+          body={`The game has ended after ${displayedTurn} turns.`}
+          buttonLabel="Rematch"
           isLoading={false}
           setState={() => resetGame()}
         />
