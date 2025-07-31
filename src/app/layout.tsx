@@ -28,7 +28,7 @@ const anonymousPro = Anonymous_Pro({
 
 export const metadata: Metadata = {
   title: "Chroma War",
-  description: "An online multiplayer game consisting of 2 or more players.",
+  description: "A multiplayer chain reaction strategy game. Play against AI or friends online!",
 };
 
 export default function RootLayout({
