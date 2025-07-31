@@ -193,7 +193,7 @@ export default function AIvsAI() {
       )}
       <div className={`z-1 transition duration-300 ease-in-out`}>
         <Navigation currentPage='aivsai' />
-        <div className="flex flex-col pb-3 sm:pb-4">
+        <div className="flex flex-col pb-3 py-3 sm:py-4">
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
