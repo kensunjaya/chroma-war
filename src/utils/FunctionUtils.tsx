@@ -28,7 +28,6 @@ export const validateFirstMove = (cells: Cell[][], row: number, col: number): bo
     return false; // not a good first move as it limits the spread to 2 or 3 cells
   }
 
-
   if (cells[row][col+1].color === 'B' || cells[row+1][col].color === 'B' || cells[row][col-1].color === 'B' || cells[row-1][col].color === 'B') {
     return false; // invalid as the blue will instantly win on the next turn
   }
@@ -96,9 +95,9 @@ const minimax = (cells: Cell[][], depth: number, isMaximizing: boolean, alpha: n
 }
 
 
-export const findBestMove = (cells: Cell[][], depth: number, turn: number, colorCount: {[key in Color]: number}, currentTurn: Color = 'R'): MiniMaxOutput => {
+export const findBestMove = (cells: Cell[][], depth: number, turn: number, colorCount: {[key in Color]: number}, currentTurn: Color = 'R', vsPlayer: boolean = true): MiniMaxOutput => {
   if (turn < 2) {
-    return minimaxFirstTurn(cells); // No valid moves on first turn
+    return minimaxFirstTurn(cells, vsPlayer); // No valid moves on first turn
   }
 
   let bestScore = -Infinity;
@@ -120,6 +119,10 @@ export const findBestMove = (cells: Cell[][], depth: number, turn: number, color
       if (score > bestScore) {
         bestScore = score;
         bestMove = { row, col };
+      } else if (score === bestScore) {
+        if (Math.random() < 0.5) {
+          bestMove = { row, col };
+        }
       }
     }
   }
@@ -149,14 +152,14 @@ const evaluateBoard = (colorCount: { [key in Color]: number }): number => {
   return ((r - b) / (r + b)) * 100;
 }
 
-export const minimaxFirstTurn = (cells: Cell[][]): MiniMaxOutput => {
-  const row = Math.floor(Math.random() * 2) + 2;
-  const col = Math.floor(Math.random() * 2) + 2;
+export const minimaxFirstTurn = (cells: Cell[][], vsPlayer: boolean): MiniMaxOutput => {
+  const row = Math.floor(Math.random() * (vsPlayer ? 2 : 4)) + (vsPlayer ? 2 : 1);
+  const col = Math.floor(Math.random() * (vsPlayer ? 2 : 4)) + (vsPlayer ? 2 : 1);
   const isValid = validateFirstMove(cells, row, col);
   if (isValid) {
     return { row, col, score: 0 }; // Return score 0 since it's the first turn
   } else {
-    return minimaxFirstTurn(cells); // Retry if invalid
+    return minimaxFirstTurn(cells, vsPlayer); // Retry if invalid
   }
 }
 

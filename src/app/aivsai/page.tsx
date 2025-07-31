@@ -37,7 +37,7 @@ export default function AIvsAI() {
     if (win) return;
     setDisplayedTurn(turn);
     setTimeout(() => {
-      const { row, col } = findBestMove(cells, 5, turn, colorCount, (turn % 2 === 0 ? 'B' : 'R'));
+      const { row, col } = findBestMove(cells, 5, turn, colorCount, (turn % 2 === 0 ? 'B' : 'R'), false);
       handleClick(row, col);
     }, 10);
   }, [isProcessing, gameStarted]);
