@@ -413,7 +413,7 @@ export default function Multiplayer() {
             </button>
           </div>
           
-          {status !== "Waiting for player to join..." ? (
+          {roomId === "" ? (
             <div className="flex flex-col mt-4 items-center text-primary w-full">
               <div className="space-x-4 flex flex-row mb-5 items-center">
                 <div className="text-xl font-semibold text-center">{`Available Rooms (${availableRooms.length})`}</div>
