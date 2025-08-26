@@ -64,6 +64,8 @@ export default function AIvsAI() {
 
     if (cell.color === 'N' && turn > 1) return;
     if (cell.color !== 'N' && cell.color !== color) return;
+    // const audio = new Audio('/tap.aac');
+    // audio.play();
     if (navigator.vibrate) {
       navigator.vibrate(20);
     }
@@ -116,6 +118,9 @@ export default function AIvsAI() {
     await sleep(delayMs);
     setCells([...newCells]);
     if (newCells[row][col].val >= 4) {
+      // const audio = new Audio('/break.aac');
+      // console.log("Audio played");
+      // audio.play();
       newCells[row][col].val = 0;
       colorCount[newCells[row][col].color] -= 1;
       setColorCount({ ...colorCount });
@@ -197,7 +202,6 @@ export default function AIvsAI() {
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
-                // onClick={() => handleClick(rowIndex, colIndex, true)}
                 disabled={true}
                 key={rowIndex * rowsCount + colIndex}
                 className={`p-1 md:p-1.5 lg:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}

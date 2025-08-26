@@ -9,6 +9,7 @@ export const BurstDot = ({ direction, color, onComplete, breakpoint }: {
 }) => {
   const displacement = breakpoint === 'xs' ? 55 : breakpoint === 'sm' ? 65 : breakpoint === 'md' ? 90 : breakpoint === 'lg' ? 100 : 110;
   const scale = breakpoint === 'xs' ? 3 : breakpoint === 'sm' ? 4 : breakpoint === 'md' ? 5 : breakpoint === 'lg' ? 5 : 6;
+  
   const getCoords = (dir: Direction) => {
     switch (dir) {
       case 'up': return { x: 0, y: -displacement };

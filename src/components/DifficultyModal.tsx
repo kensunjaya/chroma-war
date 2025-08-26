@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 interface ModalProps {
   setState: () => void;
@@ -31,21 +32,30 @@ const DifficultyModal: React.FC<ModalProps> = ({setState, setDifficulty, difficu
       <div className="p-3 md:p-4 lg:p-8 max-w-200 flex flex-col items-center shadow shadow-5xl rounded-md bg-primary space-y-3" onClick={e => e.stopPropagation()}>
         <h3 className="text-2xl font-bold text-secondary text-center">Select Difficulty</h3>
         <div className="flex flex-row py-3 text-secondary text-sm md:text-md lg:text-lg space-x-3 lg:space-x-5">
-          <button onClick={() => setLocalDifficulty(1)} className={`${cardCSS} ${localDifficulty === 1 && 'bg-fourth text-white'}`}>
+          <motion.button 
+            onClick={() => setLocalDifficulty(1)} className={`${cardCSS} ${localDifficulty === 1 && 'outline-8'}`}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="text-md lg:text-xl font-semibold">EASY</div>
-            <Image src="/easy.png" height={120} width={120} className="h-14 md:h-20 lg:h-30 w-auto pointer-events-none" alt="easy" />
+            <Image src="/1.webp" height={500} width={500} className="h-14 md:h-20 lg:h-30 w-auto pointer-events-none border" alt="easy" />
             <div className="text-xs md:text-sm text-center mb-auto">{"Beginner friendly. The AI makes simple moves."}</div>
-          </button>
-          <button onClick={() => setLocalDifficulty(3)} className={`${cardCSS} ${localDifficulty === 3 && 'bg-fourth text-white'}`}>
+          </motion.button>
+          <motion.button 
+            onClick={() => setLocalDifficulty(3)} className={`${cardCSS} ${localDifficulty === 3 && 'outline-8'}`}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="text-md lg:text-xl font-semibold">MEDIUM</div>
-            <Image src="/med.png" height={120} width={120} className="h-14 md:h-20 lg:h-30 w-auto pointer-events-none" alt="med" />
+            <Image src="/2.webp" height={500} width={500} className="h-14 md:h-20 lg:h-30 w-auto pointer-events-none" alt="med" />
             <div className="text-xs md:text-sm text-center mb-auto">{"A balanced challenge. The AI thinks a few moves ahead."}</div>
-          </button>
-          <button onClick={() => setLocalDifficulty(5)} className={`${cardCSS} ${localDifficulty === 5 && 'bg-fourth text-white'}`}>
+          </motion.button>
+          <motion.button 
+            onClick={() => setLocalDifficulty(5)} className={`${cardCSS} ${localDifficulty === 5 && 'outline-8'}`}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="text-md lg:text-xl font-semibold">HARD</div>
-            <Image src="/hard.png" height={120} width={120} className="h-14 md:h-20 lg:h-30 w-auto pointer-events-none" alt="hard" />
+            <Image src="/3.webp" height={500} width={500} className="h-14 md:h-20 lg:h-30 w-auto pointer-events-none" alt="hard" />
             <div className="text-xs md:text-sm text-center mb-auto">{"For experts. The AI plays optimally."}</div>
-          </button>
+          </motion.button>
         </div>
         {
           (localDifficulty !== difficulty && difficulty !== 0) && 
