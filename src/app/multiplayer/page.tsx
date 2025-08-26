@@ -2,7 +2,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { BurstDotStructure, Cell, Color, Direction, Room } from '@/interfaces/Types';
+import { BurstDotStructure, Cell, Color, Direction, Room, ToastProps } from '@/interfaces/Types';
 import { sleep } from '@/utils/FunctionUtils';
 import Modal from '@/components/Modal';
 import { Dots } from '@/components/Dots';
@@ -12,6 +12,7 @@ import { IoMdRefresh } from 'react-icons/io';
 import { FaDotCircle } from 'react-icons/fa';
 import { BurstDot } from '@/utils/Animation';
 import { useTailwindBreakpoint } from '@/hooks/Breakpoint';
+import { toast } from 'react-toastify';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
@@ -50,7 +51,8 @@ export default function Multiplayer() {
     socket.emit("create-room", playerName, (newRoomId: string) => {
       console.log("Created Room:", newRoomId);
       setRoomId(newRoomId);
-      setStatus("Waiting for player to join...")
+      setStatus("Waiting for a player to join...");
+      toast.info("Successfully created room! Waiting for a player to join...", ToastProps);
     });
   };
 
@@ -64,11 +66,32 @@ export default function Multiplayer() {
     }
     // subscribe to socket events
     socket.on("rooms-list", (rooms: Room[]) => {
-      console.log("Available rooms:", rooms);
+      console.log("Connected to the game server.\nThere are", rooms.length, "rooms available.");
       setAvailableRooms(rooms);
     });
     socket.on("connect", () => {
       console.log("Connected to game server!", socket.id);
+      const lastRoomId = localStorage.getItem('lastRoomId');
+      setTimeout(() => {
+        if (lastRoomId) {
+          socket.emit("rejoin", { roomId: lastRoomId, playerName: localStorage.getItem("username") || "Chroma Player" });
+        }
+      }, 500);
+    });
+
+    socket.on("rejoin-success", (room) => {
+      console.log("Rejoined room:", room);
+      toast.success("Successfully rejoined the last session.", ToastProps);
+      setRoomId(room.id);
+      setCells(room.grid);
+      setTurn(room.turn);
+      setIsAllPlayersReady(true);
+    });
+
+    socket.on("rejoin-failed", ({ error }) => {
+      console.error("Rejoin failed:", error);
+      toast.error(`Failed to rejoin the last session: ${error}`, ToastProps);
+      localStorage.removeItem("lastRoomId");
     });
 
     socket.on("player-joined", (room: Room) => {
@@ -76,15 +99,27 @@ export default function Multiplayer() {
       const pColor = room.players.find(player => player.socketId === socket.id)?.color || 'N';
       setPlayerColor(pColor);
       setStatus("Player joined the room!");
-      if (room.players.length >= 2) {
-        setIsAllPlayersReady(true);
-        setStatus("Both players are ready! Game starting...");
-        setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
+      if (room.isGameStarted) {
+        toast.info(`${room.players.find(player => player.socketId !== socket.id)?.playerName || "Anonymous"} has reconnected!`, ToastProps);
       }
+      // if (room.players.length >= 2) {
+      //   setIsAllPlayersReady(true);
+      //   setStatus("Both players are ready! Game starting...");
+      //   setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
+      // }
+    });
+
+    socket.on("game-start", (room: Room) => {
+      console.log("Game started in room:", room.roomId);
+      toast.info(`You are playing vs ${room.players.find(player => player.socketId !== socket.id)?.playerName || "Anonymous"}, good luck!`, ToastProps);
+      localStorage.setItem("lastRoomId", room.roomId);
+      setIsAllPlayersReady(true);
+      setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
     });
 
     socket.on("player-left", (room: Room) => {
       console.log("Player left room:", room);
+      toast.warn(`${room.players.find(player => player.socketId === socket.id)?.playerName || "Anonymous"} left the room. Waiting for them to rejoin`, ToastProps);
       setStatus("Player left the room.");
     });
 
@@ -119,18 +154,19 @@ export default function Multiplayer() {
       setIsProcessing(false);
     });
 
-    socket.on("game-restarted", (grid) => {
+    socket.on("game-restarted", (room) => {
       setIsWaitingForPlayer(false);
-      setCells(grid);
+      setCells(room.cells);
       setTurn(0);
       setIsProcessing(false);
       setWinner(null);
       setBurstDots([]);
+      localStorage.setItem("lastRoomId", room.roomId);
     });
 
-    setTimeout(() => {
-      socket.emit("get-rooms");
-    }, 500);
+    // setTimeout(() => {
+    //   socket.emit("get-rooms");
+    // }, 100);
 
     return () => {
       socket.off("rooms-list");
@@ -143,6 +179,12 @@ export default function Multiplayer() {
       socket.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (winner) {
+      localStorage.removeItem("lastRoomId");
+    }
+  }, [winner]);
 
   const resetGame = () => {
     socket.emit("restart-game", roomId);
@@ -305,13 +347,11 @@ export default function Multiplayer() {
 
     socket.emit("join-room", roomId, playerName, (response: JoinRoomResponse) => {
       if (response.error) {
-      setStatus("Failed to join: " + response.error);
+        setStatus("Failed to join: " + response.error);
       } else {
         setStatus("Joined room!");
         setRoomId(roomId)
         console.log("Joined Room:", roomId);
-        console.log("Initial game grid:", response.grid);
-        setIsAllPlayersReady(true);
       }
     });
   };
@@ -386,11 +426,11 @@ export default function Multiplayer() {
                 {availableRooms?.map((room) => (
                   <button 
                     onClick={() => handleJoinRoom(room.roomId)} 
-                    className="hover:cursor-pointer hover:bg-gray-900 transition duration-300 border py-4 px-7 rounded-lg w-full"
+                    className="hover:cursor-pointer hover:outline-3 transition duration-300 border py-4 px-7 rounded-lg w-full"
                     key={room.roomId ? room.roomId : uuidv4()}
                   >
                     <div className="flex items-center text-lg space-x-3">
-                      <FaDotCircle className={`${room.players?.length === 2 ? 'text-red-400' : 'text-green-400'}`} />
+                      <FaDotCircle className={`${room.isGameStarted ? 'text-red-400' : 'text-green-400'}`} />
                       <div className="mr-auto font-semibold">{room.roomId}</div>
                       <div>Host: {room.host}</div>
                     </div>

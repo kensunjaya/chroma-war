@@ -3,6 +3,8 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { Anonymous_Pro, Poppins } from "next/font/google";
 import { Cabin_Sketch } from "next/font/google";
+import { ToastContainer, Slide } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -42,6 +44,20 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.png" type="image/png" />
       </head>
       <body className="antialiased bg-secondary font-primary select-none">
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={true}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+          transition={Slide}
+          toastStyle={{ fontFamily: 'var(--font-primary)' }}
+        />
         {children}
         <Analytics />
       </body>
