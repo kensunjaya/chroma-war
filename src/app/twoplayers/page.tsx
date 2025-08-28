@@ -7,6 +7,7 @@ import { Dots } from '@/components/Dots';
 import { Navigation } from '@/components/Navigation';
 import { BurstDot } from '@/utils/Animation';
 import { useTailwindBreakpoint } from '@/hooks/Breakpoint';
+import ColorBar from '@/components/ColorBar';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
@@ -210,6 +211,7 @@ export default function PassPlay() {
             )}
           </div>
         </div>
+        <ColorBar colorCount={colorCount} turn={displayedTurn} />
         <div>
           <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-blue-400' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
             {displayedTurn % 2 === 0 ? 'BLUE\'s Turn' : `RED\'s Turn`}

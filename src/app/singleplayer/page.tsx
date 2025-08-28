@@ -12,6 +12,7 @@ import { useTailwindBreakpoint } from '@/hooks/Breakpoint';
 import { HiOutlineSelector } from "react-icons/hi";
 import RuleModal from '@/components/RuleModal';
 import DifficultyModal from '@/components/DifficultyModal';
+import ColorBar from '@/components/ColorBar';
 
 const rowsCount: number = 6;
 const colsCount: number = 6;
@@ -278,6 +279,7 @@ export default function MiniMax() {
             )}
           </div>
         </div>
+        <ColorBar colorCount={colorCount} turn={displayedTurn} />
         <div>
           <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-fourth' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
             {displayedTurn % 2 === 0 ? 'Your Turn' : `RED\'s Turn (MiniMax)`}

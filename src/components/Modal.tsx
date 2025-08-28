@@ -1,5 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 interface ModalProps {
   title: string;
@@ -9,9 +10,10 @@ interface ModalProps {
   input?: string;
   setState: () => void;
   setInput?: (val: string) => void;
+  setOnBackgroundClick?: () => void;
 }
 
-const Modal: React.FC<ModalProps> = ({title, body, buttonLabel, isLoading, input, setState, setInput}) => {
+const Modal: React.FC<ModalProps> = ({ title, body, buttonLabel, isLoading, input, setState, setInput, setOnBackgroundClick }) => {
   const [errorMsg, setErrorMsg] = useState<string>("");
   const navigate = useRouter();
 
@@ -30,8 +32,13 @@ const Modal: React.FC<ModalProps> = ({title, body, buttonLabel, isLoading, input
   }
 
   return (
-    <div className="fixed inset-0 backdrop-opacity-80 backdrop-blur-lg backdrop-brightness-40 font-primary overflow-y-auto h-full w-full flex items-center justify-center z-999 transition duration-300 ease-in-out" onClick={() => navigate.back()}>
-      <div className="py-8 px-10 w-96 shadow shadow-5xl rounded-md bg-primary" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 backdrop-opacity-80 backdrop-blur-lg backdrop-brightness-40 font-primary overflow-y-auto h-full w-full flex items-center justify-center z-999 transition duration-300 ease-in-out" onClick={setOnBackgroundClick ? setOnBackgroundClick : () => navigate.back()}>
+      <motion.div 
+        className="py-8 px-10 w-96 shadow shadow-5xl rounded-md bg-primary" onClick={e => e.stopPropagation()}
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -100 }}
+      >
         <div className="text-center">
           <h3 className="text-2xl font-bold text-secondary">{title}</h3>
           <div className="px-7 py-3">
@@ -61,7 +68,7 @@ const Modal: React.FC<ModalProps> = ({title, body, buttonLabel, isLoading, input
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
