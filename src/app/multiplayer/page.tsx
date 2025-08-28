@@ -99,14 +99,14 @@ export default function Multiplayer() {
       const pColor = room.players.find(player => player.socketId === socket.id)?.color || 'N';
       setPlayerColor(pColor);
       setStatus("Player joined the room!");
-      if (room.isGameStarted) {
-        toast.info(`${room.players.find(player => player.socketId !== socket.id)?.playerName || "Anonymous"} has reconnected!`, ToastProps);
-      }
-      // if (room.players.length >= 2) {
-      //   setIsAllPlayersReady(true);
-      //   setStatus("Both players are ready! Game starting...");
-      //   setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
+      // if (room.isGameStarted) {
+      //   toast.info(`${room.players.find(player => player.socketId !== socket.id)?.playerName || "Anonymous"} has reconnected!`, ToastProps);
       // }
+    });
+
+    socket.on("player-reconnected", (room: Room, playerName: string) => {
+      console.log("Player reconnected:", room);
+      toast.info(`${playerName || "Anonymous"} has reconnected!`, ToastProps);
     });
 
     socket.on("game-start", (room: Room) => {
@@ -117,9 +117,9 @@ export default function Multiplayer() {
       setCells(Array.from({ length: rowsCount }, () => Array.from({ length: colsCount }, () => ({ val: 0, color: 'N' }))));
     });
 
-    socket.on("player-left", (room: Room) => {
+    socket.on("player-left", (room: Room, playerName: string) => {
       console.log("Player left room:", room);
-      toast.warn(`${room.players.find(player => player.socketId === socket.id)?.playerName || "Anonymous"} left the room. Waiting for them to rejoin`, ToastProps);
+      toast.warn(`${playerName || "Anonymous"} left the room. Waiting for them to rejoin`, ToastProps);
       setStatus("Player left the room.");
     });
 
