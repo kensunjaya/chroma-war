@@ -28,9 +28,9 @@ const RuleModal: React.FC<ModalProps> = ({setState}) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -100 }}
       >
-        <div>
-          <h3 className="text-2xl font-bold text-secondary text-center">About the game</h3>
-          <div className="px-4 lg:px-7 py-3 text-gray-500 text-sm md:text-md lg:text-lg space-y-2">
+        <div className="text-secondary">
+          <h3 className="text-2xl font-bold text-center">About the game</h3>
+          <div className="px-4 text-gray-600 lg:px-7 py-3  text-sm md:text-md lg:text-lg space-y-2">
             <p>{"Welcome to Chroma War! This is a 2-player chain reaction strategy game played on a 6×6 grid. Each cell can hold a value (1–4) and a color (Red or Blue)."}</p>
             <p>{"Take control of the board by triggering chain reactions that eliminate your opponent's cells and convert them to your color."}</p>
             <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'flex-row justify-between'}`}>

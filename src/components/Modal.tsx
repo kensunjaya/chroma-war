@@ -42,7 +42,7 @@ const Modal: React.FC<ModalProps> = ({ title, body, buttonLabel, isLoading, inpu
         <div className="text-center">
           <h3 className="text-2xl font-bold text-secondary">{title}</h3>
           <div className="px-7 py-3">
-            <p className="text-lg text-gray-500">{body}</p>
+            <p className="text-lg text-gray-600">{body}</p>
           </div>
           {(input === "" || input) && (
             <input 
