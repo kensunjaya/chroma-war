@@ -5,14 +5,13 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: `
       default-src 'self';
-      script-src 'self' 'unsafe-eval';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval';
       style-src 'self' 'unsafe-inline';
       img-src 'self' data:;
       font-src 'self' https://fonts.gstatic.com;
       connect-src 'self' wss:;
       frame-ancestors 'none';
-      require-trusted-types-for 'script';
-    `.replace(/\n/g, ""), // remove newlines
+    `.replace(/\n/g, ""),
   },
   {
     key: "Cross-Origin-Opener-Policy",
