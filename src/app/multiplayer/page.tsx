@@ -361,8 +361,8 @@ export default function Multiplayer() {
       <main className="flex justify-center text-primary">
         {!playerName && (
           <Modal 
-            title={"Enter username"}
-            body={"Other players will see your username."}
+            title="Enter username"
+            body="Other players will see your username."
             buttonLabel="Save"
             isLoading={false}
             setInput={(val) => {
@@ -386,13 +386,13 @@ export default function Multiplayer() {
             <input
               type="text"
               placeholder="Room ID ..."
-              className="px-2 py-2 md:px-4 border border-primary text-primary rounded w-32 md:w-48"
-              value={textField}
-              onChange={(e) => setTextField(e.target.value)}
+              className="px-2 py-2 md:px-4 border-b-2 text-primary outline-0 w-32 md:w-48"
+              value={textField.toUpperCase()}
+              onChange={(e) => setTextField(e.target.value.toUpperCase())}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   if (textField.trim() === "") {
-                    setStatus("Please enter a valid Room ID.");
+                    toast.error("Please enter a valid Room ID.", ToastProps);
                   } else {
                     handleJoinRoom(textField);
                   }
@@ -402,12 +402,13 @@ export default function Multiplayer() {
             <button 
               onClick={() => {
                 if (textField.trim() === "") {
-                  setStatus("Please enter a valid Room ID.");
+                  toast.error("Please enter a valid Room ID.", ToastProps);
                 } else {
                   handleJoinRoom(textField);
                 }
               }} 
-              className="px-3 py-2 md:px-4 bg-fourth text-white rounded hover:bg-fourth hover:opacity-75 transition duration-300 hover:cursor-pointer"
+              className="px-4 hover:cursor-pointer py-2 w-fit transition duration-300 disabled:hover:cursor-default bg-fourth disabled:bg-gray-400 text-white font-medium rounded-md shadow-sm hover:opacity-75 disabled:hover:opacity-100 focus:outline-none focus:ring-2"
+              disabled={textField.trim().length !== 5}
             >
               Join
             </button>

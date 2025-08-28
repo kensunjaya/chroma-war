@@ -29,14 +29,14 @@ const DifficultyModal: React.FC<ModalProps> = ({setState, setDifficulty, difficu
 
   return (  
     <div className="fixed inset-0 backdrop-opacity-80 backdrop-blur-lg backdrop-brightness-40 font-primary overflow-y-auto h-full w-full flex items-center justify-center z-999 transition duration-500 ease-in-out p-8" onClick={() => difficulty !== 0 && handleClose()}>
-      <div className="p-3 md:p-4 lg:p-8 max-w-200 flex flex-col items-center shadow shadow-5xl rounded-md bg-primary space-y-3" onClick={e => e.stopPropagation()}>
-        <h3 className="text-2xl font-bold text-secondary text-center">Select Difficulty</h3>
-        <div className="flex flex-row py-3 text-secondary text-sm md:text-md lg:text-lg space-x-3 lg:space-x-5">
+      <div className="p-3 md:p-4 lg:p-8 max-w-200 text-secondary flex flex-col items-center shadow shadow-5xl rounded-md bg-primary space-y-3" onClick={e => e.stopPropagation()}>
+        <h3 className="text-2xl font-bold text-center">Select Difficulty</h3>
+        <div className="flex flex-row py-3 text-sm md:text-md lg:text-lg space-x-3 lg:space-x-5">
           <motion.button 
             onClick={() => setLocalDifficulty(1)} className={`${cardCSS} ${localDifficulty === 1 && 'outline-8'}`}
             whileHover={{ scale: 1.02 }}
           >
-            <div className="text-md lg:text-xl font-semibold">EASY</div>
+            <div className="text-md lg:text-xl font-bold">EASY</div>
             <Image src="/1.webp" height={500} width={500} className="h-14 md:h-20 lg:h-30 w-auto pointer-events-none border" alt="easy" />
             <div className="text-xs md:text-sm text-center mb-auto">{"Beginner friendly. The AI makes simple moves."}</div>
           </motion.button>
@@ -44,7 +44,7 @@ const DifficultyModal: React.FC<ModalProps> = ({setState, setDifficulty, difficu
             onClick={() => setLocalDifficulty(3)} className={`${cardCSS} ${localDifficulty === 3 && 'outline-8'}`}
             whileHover={{ scale: 1.02 }}
           >
-            <div className="text-md lg:text-xl font-semibold">MEDIUM</div>
+            <div className="text-md lg:text-xl font-bold">MEDIUM</div>
             <Image src="/2.webp" height={500} width={500} className="h-14 md:h-20 lg:h-30 w-auto pointer-events-none" alt="med" />
             <div className="text-xs md:text-sm text-center mb-auto">{"A balanced challenge. The AI thinks a few moves ahead."}</div>
           </motion.button>
@@ -52,7 +52,7 @@ const DifficultyModal: React.FC<ModalProps> = ({setState, setDifficulty, difficu
             onClick={() => setLocalDifficulty(5)} className={`${cardCSS} ${localDifficulty === 5 && 'outline-8'}`}
             whileHover={{ scale: 1.02 }}
           >
-            <div className="text-md lg:text-xl font-semibold">HARD</div>
+            <div className="text-md lg:text-xl font-bold">HARD</div>
             <Image src="/3.webp" height={500} width={500} className="h-14 md:h-20 lg:h-30 w-auto pointer-events-none" alt="hard" />
             <div className="text-xs md:text-sm text-center mb-auto">{"For experts. The AI plays optimally."}</div>
           </motion.button>

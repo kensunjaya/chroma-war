@@ -44,13 +44,11 @@ export default function MiniMax() {
       setDifficulty(storedDifficulty);
     }
     const storedUserId = localStorage.getItem('userId');
-    setTimeout(() => {
-      if (storedUserId) {
-        setUserId(storedUserId);
-      } else {
-        setUserId(null);
-      }
-    }, 500);
+    if (storedUserId) {
+      setUserId(storedUserId);
+    } else {
+      setUserId(null);
+    }
   }, []);
 
   useEffect(() => {

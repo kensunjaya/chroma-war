@@ -41,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${cabinSketch.variable} ${anonymousPro.variable}`}>
       <head>
-        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="icon" href="/favicon.webp" type="image/webp" />
       </head>
       <body className="antialiased bg-secondary font-primary select-none">
         <ToastContainer

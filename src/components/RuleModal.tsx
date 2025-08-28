@@ -25,7 +25,7 @@ const RuleModal: React.FC<ModalProps> = ({setState}) => {
         <div>
           <h3 className="text-2xl font-bold text-secondary text-center">About the game</h3>
           <div className="px-4 lg:px-7 py-3 text-gray-500 text-sm md:text-md lg:text-lg space-y-2">
-            <p>{"Welcome to Chroma War, it is a 2-player chain reaction strategy game on a 6x6 grid. Each cell may contains a value (1 to 4) and a color (Red and Blue)."}</p>
+            <p>{"Welcome to Chroma War! This is a 2-player chain reaction strategy game played on a 6×6 grid. Each cell can hold a value (1–4) and a color (Red or Blue)."}</p>
             <p>{"Take control of the board by triggering chain reactions that eliminate your opponent's cells and convert them to your color."}</p>
             <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'flex-row justify-between'}`}>
               <ol className="list-disc pl-4">
@@ -34,7 +34,7 @@ const RuleModal: React.FC<ModalProps> = ({setState}) => {
                 <li>{"When a cell reaches 4 dots, it explodes and affects its neighbors."}</li>
                 <li>{"The game ends when one player dominates the board."}</li>
               </ol>
-              <video src={isMobile ? "demo_preview_mobile.mp4" : "demo_preview.mp4"} className={`${isMobile ? "h-40" : "w-40"} rounded-md pointer-events-none`} autoPlay muted loop playsInline />
+              <video src={isMobile ? "demo_preview_mobile.webm" : "demo_preview.webm"} className={`${isMobile ? "h-40" : "w-40"} rounded-md pointer-events-none`} autoPlay muted loop playsInline />
             </div>
             <p>{"Let the Chroma War begin, every tap matters!"}</p>
           </div>
