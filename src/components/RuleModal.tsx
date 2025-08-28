@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 interface ModalProps {
   setState: () => void;
@@ -21,7 +22,12 @@ const RuleModal: React.FC<ModalProps> = ({setState}) => {
 
   return (
     <div className="fixed inset-0 backdrop-opacity-80 backdrop-blur-lg backdrop-brightness-40 font-primary overflow-y-auto h-full w-full flex items-center justify-center z-999 transition duration-500 ease-in-out p-8">
-      <div className="p-4 lg:p-8 max-w-200 shadow shadow-5xl rounded-md bg-primary">
+      <motion.div 
+        className="p-4 lg:p-8 max-w-200 shadow shadow-5xl rounded-md bg-primary"
+        initial={{ opacity: 0, y: 100 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -100 }}
+      >
         <div>
           <h3 className="text-2xl font-bold text-secondary text-center">About the game</h3>
           <div className="px-4 lg:px-7 py-3 text-gray-500 text-sm md:text-md lg:text-lg space-y-2">
@@ -47,7 +53,7 @@ const RuleModal: React.FC<ModalProps> = ({setState}) => {
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
