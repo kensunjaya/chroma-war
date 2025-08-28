@@ -347,7 +347,8 @@ export default function Multiplayer() {
 
     socket.emit("join-room", roomId, playerName, (response: JoinRoomResponse) => {
       if (response.error) {
-        setStatus("Failed to join: " + response.error);
+        toast.error(response.error, ToastProps);
+        console.error("Failed to join room:", response.error);
       } else {
         setStatus("Joined room!");
         setRoomId(roomId)
