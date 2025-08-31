@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 export const  getTailwindBreakpoint = () : Breakpoint => {
   const width = window.innerWidth;
+  if (width < 400) return '2xs';
   if (width < 640) return 'xs';
   if (width < 768) return 'sm';
   if (width < 1024) return 'md';

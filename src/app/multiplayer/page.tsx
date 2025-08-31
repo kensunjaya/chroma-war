@@ -571,13 +571,13 @@ export default function Multiplayer() {
           )}
         </div>
         <div className="flex flex-col items-center py-3 sm:py-4">
-          <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 md:gap-3 lg:gap-4 ${opponentDisconnected ? 'opacity-40' : ''}`}>
+          <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 [@media(min-width:400px)]:portrait:gap-2.5 md:gap-3 lg:gap-4 ${opponentDisconnected ? 'opacity-40' : ''}`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
                 onClick={() => handleClick(rowIndex, colIndex)}
                 key={rowIndex * rowsCount + colIndex}
                 disabled={opponentDisconnected}
-                className={`p-1 md:p-1.5 lg:p-2 ${opponentDisconnected ? 'cursor-not-allowed' : 'cursor-pointer'} rounded-xl bg-primary justify-center items-center h-12 w-12 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
+                className={`${opponentDisconnected ? 'cursor-not-allowed' : 'cursor-pointer'} p-1 [@media(min-width:400px)]:portrait:p-1.25 md:p-1.5 lg:p-2 rounded-xl bg-primary justify-center items-center h-12 w-12 [@media(min-width:400px)]:portrait:h-14 [@media(min-width:400px)]:portrait:w-14 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
               >
                 <div
                   className={`relative flex justify-center items-center w-full h-full`}

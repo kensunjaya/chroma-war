@@ -7,8 +7,8 @@ export const BurstDot = ({ direction, color, onComplete, breakpoint }: {
   onComplete: () => void;
   breakpoint: Breakpoint;
 }) => {
-  const displacement = breakpoint === 'xs' ? 55 : breakpoint === 'sm' ? 65 : breakpoint === 'md' ? 90 : breakpoint === 'lg' ? 100 : 110;
-  const scale = breakpoint === 'xs' ? 3 : breakpoint === 'sm' ? 4 : breakpoint === 'md' ? 5 : breakpoint === 'lg' ? 5 : 6;
+  const displacement = breakpoint === '2xs' ? 57 : breakpoint === 'xs' ? 65 : breakpoint === 'sm' ? 70 : breakpoint === 'md' ? 90 : breakpoint === 'lg' ? 100 : 110;
+  const scale = breakpoint === '2xs' ? 3.05 : breakpoint === 'xs' ? 3.5 : breakpoint === 'sm' ? 5 : breakpoint === 'md' ? 5 : breakpoint === 'lg' ? 5 : 6;
   
   const getCoords = (dir: Direction) => {
     switch (dir) {
@@ -22,8 +22,8 @@ export const BurstDot = ({ direction, color, onComplete, breakpoint }: {
   return (
     <motion.div
       initial={{ x: 0, y: 0, opacity: 1, scale: scale }}
-      animate={{ ...getCoords(direction), opacity: 0.8, scale: scale }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
+      animate={{ ...getCoords(direction), opacity: 0.9, scale: scale }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
       onAnimationComplete={onComplete}
       className={`absolute w-3 h-3 z-[5] rounded-full bg-${ColorMap[color]} pointer-events-none`}
     />
