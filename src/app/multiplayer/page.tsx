@@ -574,6 +574,7 @@ export default function Multiplayer() {
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 [@media(min-width:400px)_and_(max-width:639px)]:portrait:gap-2.5 md:gap-3 lg:gap-4 ${opponentDisconnected ? 'opacity-40' : ''}`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
+                aria-label={`Cell ${rowIndex}, ${colIndex}`}
                 onClick={() => handleClick(rowIndex, colIndex)}
                 key={rowIndex * rowsCount + colIndex}
                 disabled={opponentDisconnected}

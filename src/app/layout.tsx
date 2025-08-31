@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
-import { Anonymous_Pro, Poppins } from "next/font/google";
-import { Cabin_Sketch } from "next/font/google";
+import { Anonymous_Pro, Poppins, Potta_One } from "next/font/google";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -13,12 +12,13 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const cabinSketch = Cabin_Sketch({
+const pottaOne = Potta_One({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-cabin-sketch",
+  weight: ["400"],
+  variable: "--font-potta-one",
   display: "swap",
 });
+
 
 const anonymousPro = Anonymous_Pro({
   subsets: ["latin"],
@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${poppins.variable} ${cabinSketch.variable} ${anonymousPro.variable}`}>
+    <html lang="en" className={`${poppins.variable} ${pottaOne.variable} ${anonymousPro.variable}`}>
       <head>
         <link rel="icon" href="/favicon.webp" type="image/webp" />
       </head>

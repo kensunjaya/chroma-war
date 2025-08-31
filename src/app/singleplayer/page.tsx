@@ -250,6 +250,7 @@ export default function MiniMax() {
           <div className={`grid mt-4 sm:mt-5 grid-cols-6 gap-2 [@media(min-width:400px)_and_(max-width:639px)]:portrait:gap-2.5 md:gap-3 lg:gap-4`}>
             {cells.map((row, rowIndex) => row.map((cell, colIndex) => (
               <button
+                aria-label={`Cell ${rowIndex}, ${colIndex}`}
                 onClick={() => handleClick(rowIndex, colIndex, true)}
                 key={rowIndex * rowsCount + colIndex}
                 className={`p-1 [@media(min-width:400px)_and_(max-width:639px)]:portrait:p-1.25 md:p-1.5 lg:p-2 cursor-pointer rounded-xl bg-primary justify-center items-center h-12 w-12 [@media(min-width:400px)_and_(max-width:639px)]:portrait:h-14 [@media(min-width:400px)_and_(max-width:639px)]:portrait:w-14 xs:h-16 xs:w-16 sm:h-16 sm:w-16 md:h-20 md:w-20 lg:h-24 lg:w-24`}
