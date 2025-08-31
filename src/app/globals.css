@@ -17,11 +17,10 @@
 
   --font-primary: var(--font-poppins);
   --font-title: var(--font-potta-one);
-  --font-mono: var(--font-anonymous-pro);
+  --font-mono: var(--font-ibm-plex-mono);
 }
 
 body {
   font-family: var(--font-primary);
   background-color: var(--color-secondary);
 }
-

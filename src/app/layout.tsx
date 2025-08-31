@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
-import { Anonymous_Pro, Poppins, Potta_One } from "next/font/google";
+import { IBM_Plex_Mono, Poppins, Potta_One } from "next/font/google";
 import { ToastContainer, Slide } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -20,11 +20,10 @@ const pottaOne = Potta_One({
 });
 
 
-const anonymousPro = Anonymous_Pro({
+const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-anonymous-pro",
+  weight: ["500"],
+  variable: "--font-ibm-plex-mono",
   display: "swap",
 });
 
@@ -39,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${poppins.variable} ${pottaOne.variable} ${anonymousPro.variable}`}>
+    <html lang="en" className={`${poppins.variable} ${pottaOne.variable} ${ibmPlexMono.variable}`}>
       <head>
         <link rel="icon" href="/favicon.webp" type="image/webp" />
       </head>
