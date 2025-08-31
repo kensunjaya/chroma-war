@@ -102,7 +102,14 @@ export default function Multiplayer() {
   }, [winner, playerName, roomId]);
 
   useEffect(() => {
-    socket.connect();
+    try {
+      if (!socket.connected) {
+        socket.connect();
+      }
+    } catch (error) {
+      toast.error("Failed to connect to the multiplayer server. Please try again later.", ToastProps);
+      console.error(error);
+    }
     const name = localStorage.getItem("username");
     if (name) {
       setPlayerName(name);
