@@ -4,7 +4,8 @@
   --color-primary: #DCD7C9;
   --color-secondary: #1C2B2D;
   --color-third: #000000;
-  --color-fourth: #BF8C63;
+  --color-fourth: #D99968;
+  --color-fifth: #BD865B;
 }
 
 @theme inline {
@@ -12,6 +13,7 @@
   --color-secondary: var(--color-secondary);
   --color-third: var(--color-third);
   --color-fourth: var(--color-fourth);
+  --color-fifth: var(--color-fifth);
 
   --font-primary: var(--font-poppins);
   --font-title: var(--font-potta-one);

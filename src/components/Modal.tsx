@@ -48,7 +48,7 @@ const Modal: React.FC<ModalProps> = ({ title, body, buttonLabel, isLoading, inpu
             <input 
               type="text" 
               placeholder="Min 3 characters" 
-              className="w-full mb-2 py-2 text-xl border-b-2 border-fourth outline-0 outline-gray-400 placeholder:opacity-50 placeholder:font-light focus:outline-fourth text-center text-secondary"
+              className="w-full mb-2 py-2 text-xl border-b-2 border-fifth outline-0 outline-gray-400 placeholder:opacity-50 placeholder:font-light text-center text-secondary"
               onChange={(e) => setInput && setInput(e.target.value)}
               maxLength={16}
               minLength={3}
@@ -62,7 +62,7 @@ const Modal: React.FC<ModalProps> = ({ title, body, buttonLabel, isLoading, inpu
                 isLoading ||
                 (input !== undefined && (input.length < 3 || input.length > 15))
               }
-              className="px-4 hover:cursor-pointer py-2 w-fit transition duration-300 disabled:hover:cursor-default bg-fourth disabled:bg-gray-400 text-white font-medium rounded-md shadow-sm hover:opacity-75 disabled:hover:opacity-100 focus:outline-none focus:ring-2"
+              className="px-4 hover:cursor-pointer py-2 w-fit transition duration-300 disabled:hover:cursor-default bg-fifth disabled:bg-gray-400 text-white font-medium rounded-md shadow-sm hover:opacity-75 disabled:hover:opacity-100 focus:outline-none focus:ring-2"
             >
               {buttonLabel}
             </button>

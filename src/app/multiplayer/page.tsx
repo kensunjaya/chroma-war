@@ -131,6 +131,11 @@ export default function Multiplayer() {
       }
     });
 
+    socket.on("connect_error", (err) => {
+      console.error("Connection error:", err.message);
+      toast.error("Failed to connect to the server. Try again later.", ToastProps);
+    });
+
     socket.on("rejoin-success", (room) => {
       console.log("Rejoined room:", room);
       toast.success("Successfully rejoined the last session.", ToastProps);
