@@ -35,7 +35,7 @@ _Built with the tools and technologies:_
 This project enganges developers to create interactive, real-time multiplayer games with AI-driven features. The core benefits include:
 
 - 🧩 **Real-Time Multiplayer**: Leverages WebSocket for instant game updates and synchronized gameplay.
-- 🎮 **AI Integration**: Uses Gemini 2.0 Flash to generate strategic moves, adding depth to gameplay.
+- 🎮 **Advanced Algorithm**: Uses Minimax with alpha-beta pruning to generate strategic moves, adding depth to gameplay.
 - 🛠️ **Modular Architecture**: Built with TypeScript, ESLint, and Next.js for maintainability and scalability.
 - 🌟 **Rich UI Components**: Includes reusable components like modals and navigation for a cohesive user experience.
 - 🚀 **Easy Deployment**: Optimized setup with Vercel integration for rapid deployment and scaling.
