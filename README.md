@@ -1,81 +1,124 @@
-# Chroma-War
+<h1>
+  <img src="public/favicon.webp" alt="" width="25" height="25" style="vertical-align: bottom; margin-right: 10px;">
+  <span style="vertical-align: middle;">Chroma War</span>
+</h1>
 
-_Unleash the Power of Strategy, Dominate Every Chain Reaction_
+A chain-reaction strategy game where two players face off in real time. Built for the modern web with smooth multiplayer gameplay enhanced by AI-powered logic and sleek UI.
 
-![last-commit](https://img.shields.io/github/last-commit/kensunjaya/chroma-war?style=flat&logo=git&logoColor=white&color=0080ff)
-![repo-top-language](https://img.shields.io/github/languages/top/kensunjaya/chroma-war?style=flat&color=0080ff)
-![repo-language-count](https://img.shields.io/github/languages/count/kensunjaya/chroma-war?style=flat&color=0080ff)
-
-_Built with the tools and technologies:_
-
-![JSON](https://img.shields.io/badge/JSON-000000.svg?style=flat&logo=JSON&logoColor=white)
-![Markdown](https://img.shields.io/badge/Markdown-000000.svg?style=flat&logo=Markdown&logoColor=white)
-![npm](https://img.shields.io/badge/npm-CB3837.svg?style=flat&logo=npm&logoColor=white)
-![React](https://img.shields.io/badge/React-61DAFB.svg?style=flat&logo=React&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6.svg?style=flat&logo=TypeScript&logoColor=white)
-![ESLint](https://img.shields.io/badge/ESLint-4B32C3.svg?style=flat&logo=ESLint&logoColor=white)
-![Socket](https://img.shields.io/badge/Socket-C93CD7.svg?style=flat&logo=Socket&logoColor=white)
+Visit the live demo: [chroma-war.vercel.app](https://chroma-war.vercel.app)
 
 ---
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Usage](#usage)
+- [Overview](#overview)  
+- [Features](#features)  
+- [Tech Stack](#tech-stack)  
+- [Getting Started](#getting-started)  
+  - [Prerequisites](#prerequisites)  
+  - [Installation](#installation)  
+  - [Running Locally](#running-locally)  
+- [Gameplay](#gameplay)  
+- [Project Structure](#project-structure)  
+- [Contribution](#contribution)  
+- [License](#license)
 
 ---
 
 ## Overview
 
-**Chroma War** is a modern web application built with **Next.js**, delivering an interactive, multiplayer grid-based game experience enhanced by AI and real-time communication. It showcases a scalable architecture with seamless deployment options and a rich feature set.
+**Chroma-War** is a modern, web-based strategy game built using Next.js and TypeScript. Players engage in intense, real-time chain-reaction battles where every move counts. The game features AI-driven move calculations using Minimax with α-β pruning—making matches both challenging and fun.
 
-This project enganges developers to create interactive, real-time multiplayer games with AI-driven features. The core benefits include:
+---
 
-- 🧩 **Real-Time Multiplayer**: Leverages WebSocket for instant game updates and synchronized gameplay.
-- 🎮 **Advanced Algorithm**: Uses Minimax with alpha-beta pruning to generate strategic moves, adding depth to gameplay.
-- 🛠️ **Modular Architecture**: Built with TypeScript, ESLint, and Next.js for maintainability and scalability.
-- 🌟 **Rich UI Components**: Includes reusable components like modals and navigation for a cohesive user experience.
-- 🚀 **Easy Deployment**: Optimized setup with Vercel integration for rapid deployment and scaling.
+## Features
+
+🧩 **Real-Time Multiplayer**: Players interact over WebSockets for immediate, synchronized gameplay.  
+🎮 **Smart AI Opponent**: Crafted with Minimax enhanced by α-β pruning to deliver strategic and dynamic challenges.  
+🛠️ **Modular Architecture**: Built with TypeScript and ESLint for maintainable, scalable code.  
+🌟 **User-Friendly UI**: Includes reusable components such as modals, navigation menus, and game boards.  
+🚀 **Easy Deployment**: Deploy instantly with Vercel for fast, optimized hosting.  
+
+---
+
+## Tech Stack
+
+| Layer            | Technology        |
+|------------------|------------------|
+| Frontend         | Next.js, React, TypeScript |
+| Linter/Formatter | ESLint           |
+| Build & Tooling  | npm, Next.js config |
+| Deployment       | Vercel           |
+| Communication    | WebSocket        |
+| AI Logic         | Minimax + α-β Pruning |
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
-
-This project requires the following dependencies:
-
-- **Programming Language**: TypeScript
-- **Package Manager**: npm
+- **Node.js** (v16+ recommended)  
+- **npm** (comes bundled with Node.js)
 
 ### Installation
 
-Build Chroma War from source and install dependencies:
+```
+git clone https://github.com/kensunjaya/chroma-war.git
+cd chroma-war
+npm install
+```
 
-1. **Clone the repository:**
+### Running Locally
 
-   ```bash
-   git clone https://github.com/kensunjaya/chroma-war.git
-   ```
+```
+npm run dev
+```
 
-2. **Navigate to the project directory:**
-   
-   ```bash
-   cd chroma-war
-   ```
+This starts the development server (typically at `http://localhost:3000`) for testing and iteration.
 
-3. **Install the dependencies:**
+---
 
-   ```bash
-   npm install
-   ```
+## Gameplay
 
-### Usage
+Chroma-War is a grid-based game where players take turns to drop or activate “atoms” that can trigger chain reactions, changing the state of the board. When playing against the AI, the Minimax algorithm with α-β pruning generates moves, ensuring that the opponent plays with both speed and strategic depth. Real-time updates are powered by WebSocket, allowing seamless multiplayer matches.
 
-Run the project with:
-   ```bash
-   npm run dev
-   ```
+---
+
+## Project Structure
+
+```
+chroma-war/
+├── public/                 # Static assets (images, icons)
+├── src/                    # Source code and components
+├── .vscode/                # Editor config
+├── README.md               # Project documentation (you’re here!)
+├── package.json            # Project metadata & dependencies
+├── tsconfig.json           # TypeScript configuration
+├── eslint.config.mjs       # ESLint configuration
+├── postcss.config.mjs      # PostCSS configuration
+├── next.config.ts          # Next.js build config
+├── next-sitemap.config.js  # Sitemap generation settings
+└── package-lock.json       # Lockfile for npm dependencies
+```
+
+---
+
+## Contribution
+
+Contributions are welcome! Feel free to:
+
+- Submit issues to report bugs or suggest enhancements  
+- Open pull requests to propose improvements  
+- Start discussions around new features or game modes
+
+Please fork the repository and follow the [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow).
+
+---
+
+## License
+
+This project is licensed under the MIT License – see the LICENSE file for details.  
+
+You are free to use, modify, and distribute this project for personal or commercial purposes, provided that proper credit is given. This keeps the project open and widely usable, while still ensuring attribution to the original author.
+
+---
