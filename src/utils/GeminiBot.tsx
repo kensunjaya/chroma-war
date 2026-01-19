@@ -37,7 +37,7 @@ const training_dataset = [
   ],
 ];
 
-const fallbackModels = ["gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-flash-8b"];
+const fallbackModels = ["gemini-2.5-flash-lite", "gemini-3.0-flash-preview", "gemini-2.5-flash", "gemini-2.0-flash-lite"];
 
 export async function promptToGemini(cells: Cell[][], isFirstTurn: boolean): Promise<string> {
 
