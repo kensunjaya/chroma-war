@@ -191,34 +191,34 @@ export default function MonteCarloSimulation() {
         navigator.vibrate(20);
       }
 
-      // draw burst animation
-      if (row === 0 && col === 0) {
-        addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'N'>);
-      }
-      else if (row === 0 && col === colsCount - 1) {
-        addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'N'>);
-      }
-      else if (row === rowsCount - 1 && col === 0) {
-        addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'N'>);
-      }
-      else if (row === rowsCount - 1 && col === colsCount - 1) {
-        addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'N'>);
-      }
-      else if (row === 0) {
-        addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'N'>);
-      }
-      else if (row === rowsCount - 1) {
-        addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'N'>);
-      }
-      else if (col === 0) {
-        addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'N'>);
-      }
-      else if (col === colsCount - 1) {
-        addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'N'>);
-      }
-      else {
-        addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'N'>);
-      }
+      // // draw burst animation
+      // if (row === 0 && col === 0) {
+      //   addBurst(row, col, ['down', 'right'], color as Exclude<Color, 'N'>);
+      // }
+      // else if (row === 0 && col === colsCount - 1) {
+      //   addBurst(row, col, ['down', 'left'], color as Exclude<Color, 'N'>);
+      // }
+      // else if (row === rowsCount - 1 && col === 0) {
+      //   addBurst(row, col, ['up', 'right'], color as Exclude<Color, 'N'>);
+      // }
+      // else if (row === rowsCount - 1 && col === colsCount - 1) {
+      //   addBurst(row, col, ['up', 'left'], color as Exclude<Color, 'N'>);
+      // }
+      // else if (row === 0) {
+      //   addBurst(row, col, ['down', 'left', 'right'], color as Exclude<Color, 'N'>);
+      // }
+      // else if (row === rowsCount - 1) {
+      //   addBurst(row, col, ['up', 'left', 'right'], color as Exclude<Color, 'N'>);
+      // }
+      // else if (col === 0) {
+      //   addBurst(row, col, ['up', 'down', 'right'], color as Exclude<Color, 'N'>);
+      // }
+      // else if (col === colsCount - 1) {
+      //   addBurst(row, col, ['up', 'down', 'left'], color as Exclude<Color, 'N'>);
+      // }
+      // else {
+      //   addBurst(row, col, ['up', 'down', 'left', 'right'], color as Exclude<Color, 'N'>);
+      // }
 
       const promises = [];
       // now recursively fill adjacent cells
