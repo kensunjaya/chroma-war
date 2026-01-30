@@ -163,6 +163,31 @@ export const minimaxFirstTurn = (cells: Cell[][], vsPlayer: boolean): MiniMaxOut
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const downloadCSV = (data: { [key: string]: any[] }) => {
+  const headers = Object.keys(data);
+  const rowCount = data[headers[0]].length;
+  const rows = [];
+
+  for (let i = 0; i < rowCount; i++) {
+    rows.push(
+      headers.map(h => data[h][i]).join(",")
+    );
+  }
+
+  const csv = [headers.join(","), ...rows].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "chroma-war-montecarlo-samples.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+
 const recursiveFill = (cells: Cell[][], row: number, col: number, color: Color, colorCount: {[key in Color]: number}) => {
   cells[row][col].val += 1;
   cells[row][col].color = color;
@@ -178,3 +203,4 @@ const recursiveFill = (cells: Cell[][], row: number, col: number, color: Color, 
     if (col < 5) recursiveFill(cells, row, col + 1, color, colorCount); // Right
   }
 }
+

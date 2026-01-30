@@ -4,7 +4,7 @@ import { FaGithub } from "react-icons/fa";
 import Image from "next/image";
 
 interface NavigationProps {
-  currentPage: 'vsllm' | 'minimax' | 'twoplayers' | 'multiplayer' | 'aivsai';
+  currentPage: 'vsllm' | 'minimax' | 'twoplayers' | 'multiplayer' | 'aivsai' | 'montecarlo';
 }
 export const Navigation = ({ currentPage }: NavigationProps) => {
   return (
