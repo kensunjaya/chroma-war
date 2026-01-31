@@ -153,8 +153,10 @@ const evaluateBoard = (colorCount: { [key in Color]: number }): number => {
 }
 
 export const minimaxFirstTurn = (cells: Cell[][], vsPlayer: boolean): MiniMaxOutput => {
-  const row = Math.floor(Math.random() * (vsPlayer ? 2 : 4)) + (vsPlayer ? 2 : 1);
-  const col = Math.floor(Math.random() * (vsPlayer ? 2 : 4)) + (vsPlayer ? 2 : 1);
+  const row = Math.floor(Math.random() * (vsPlayer ? 2 : 2)) + (vsPlayer ? 2 : 2);
+  const col = Math.floor(Math.random() * (vsPlayer ? 2 : 2)) + (vsPlayer ? 2 : 2);
+  // const row = Math.floor(Math.random() * (vsPlayer ? 2 : 4)) + (vsPlayer ? 2 : 1);
+  // const col = Math.floor(Math.random() * (vsPlayer ? 2 : 4)) + (vsPlayer ? 2 : 1);
   const isValid = validateFirstMove(cells, row, col);
   if (isValid) {
     return { row, col, score: 0 }; // Return score 0 since it's the first turn
