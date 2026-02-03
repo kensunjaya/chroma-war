@@ -38,7 +38,7 @@ export default function MonteCarloSimulation() {
     'N': 0,
   });
 
-  const [n_iter, setNIter] = useState<number>(1000);
+  const [n_iter, setNIter] = useState<number>(10000);
   const [turns, setTurns] = useState<number[]>([]);
   const [currentRound, setCurrentRound] = useState<number>(1);
 
