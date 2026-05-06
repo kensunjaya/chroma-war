@@ -283,7 +283,7 @@ export default function MiniMax() {
         <ColorBar colorCount={colorCount} turn={displayedTurn} />
         <div>
           <p className={`text-center ${displayedTurn % 2 === 0 ? 'text-fourth' : 'text-red-400'} text-lg md:text-xl font-semibold mt-4`}>
-            {displayedTurn % 2 === 0 ? 'Your Turn' : `RED\'s Turn (MiniMax)`}
+            {displayedTurn % 2 === 0 ? 'Your Turn' : `RED\'s Turn (AI)`}
           </p>
         </div>
       </div>
